@@ -62,15 +62,16 @@
                         ref="Vuetable"
                         :append-params="vuetableQueryParams"
                         :css="vuetableStyles"
+                        :data-path="dataPath"
                         :fields="tableFields"
                         :http-fetch="httpFetch"
                         :http-options="httpOptions"
                         :per-page="perPage"
                         :query-params="queryParams"
+                        :pagination-path="paginationPath"
                         :show-sort-icons="true"
                         api-url="/roles"
                         class="table table-hover table-condensed"
-                        pagination-path=""
                         track-by="id"
                         @vuetable:pagination-data="onPaginationData"
                     >
@@ -139,9 +140,7 @@ export default {
         appendParams: {
             type: Object,
             default() {
-                return {
-                    format: "true"
-                }
+                return {}
             }
         },
         bulkActions: {
@@ -172,6 +171,10 @@ export default {
                 return {}
             }
         },
+        dataPath: {
+            type: String,
+            default: "data"
+        },
         httpFetch: {
             type: Function,
             default: null
@@ -188,13 +191,17 @@ export default {
                 return {
                     sort: "sort",
                     page: "page",
-                    perPage: "limit"
+                    perPage: "per_page"
                 }
             }
         },
         paginationData: {
             type: Function,
             default: null
+        },
+        paginationPath: {
+            type: String,
+            default: "links.pagination"
         },
         resources: {
             type: Array,
@@ -213,14 +220,6 @@ export default {
                 return [25, 50, 100];
             }
         },
-        showActionsDelete: {
-            type: Boolean,
-            default: true
-        },
-        showActionsEdit: {
-            type: Boolean,
-            default: true
-        },
         searchOptions: {
             type: Object,
             default() {
@@ -229,6 +228,14 @@ export default {
                     filters: []
                 }
             }
+        },
+        showActionsDelete: {
+            type: Boolean,
+            default: true
+        },
+        showActionsEdit: {
+            type: Boolean,
+            default: true
         },
         showBulkActions: {
             type: Boolean,
@@ -318,18 +325,12 @@ export default {
         next();
     },
     methods: {
-        bulkDelete() {
-            console.log("bulk delete");
-        },
+        bulkDelete() {},
         closeAddCustomFilter() {
             this.$modal.hide("custom-filters-form");
         },
-        exportCsv() {
-            console.log("export csv");
-        },
-        exportPdf() {
-            console.log("export pdf");
-        },
+        exportCsv() {},
+        exportPdf() {},
         getAllQueryParams() {
             return this.$refs.Vuetable.getAllQueryParams();
         },
