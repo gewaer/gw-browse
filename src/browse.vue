@@ -9,13 +9,13 @@
         >
             <custom-filters-form
                 :fields="customFilterFields"
-                :resource-name="currentResource.name"
+                :resource-name="currentResource.slug"
                 mode="form"
                 @saved="closeAddCustomFilter()"
             />
         </modal>
 
-        <h3 class="section-title p-l-10">{{ currentResource.title }}</h3>
+        <h3 class="section-title p-l-10">{{ currentResource.name }}</h3>
 
         <resource-actions
             v-if="showResourceActions"
@@ -28,6 +28,7 @@
             :show-bulk-actions="showBulkActions"
             :show-create-resource="showCreateResource"
             @getData="getData"
+            @run-action="runAction"
             @show-custom-filters-form="$modal.show('custom-filters-form')"
         />
         <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
@@ -57,9 +58,9 @@
         <div class="card m-b-0">
             <div class="card-block">
                 <div class="table-responsive">
-                    <!-- :api-url="`/${currentResource.name}`" -->
                     <vuetable
                         ref="Vuetable"
+                        :api-url="`/${currentResource.slug}`"
                         :append-params="vuetableQueryParams"
                         :css="vuetableStyles"
                         :data-path="dataPath"
@@ -70,7 +71,6 @@
                         :query-params="queryParams"
                         :pagination-path="paginationPath"
                         :show-sort-icons="true"
-                        api-url="/roles"
                         class="table table-hover table-condensed"
                         track-by="id"
                         @vuetable:pagination-data="onPaginationData"
@@ -207,7 +207,7 @@ export default {
             type: Array,
             required: true,
             validator(options) {
-                return options.every(option => option.name && option.title);
+                return options.every(option => option.name && option.slug);
             }
         },
         resultsPerPage: {
@@ -355,33 +355,22 @@ export default {
             return fields.map(field => `${field}:${separator}${encodedParams}${separator}`).join(";");
         },
         getResource(resourceName) {
-            this.currentResource = this.resources.find(resource => resource.name == resourceName);
+            this.currentResource = this.resources.find(resource => resource.slug == resourceName);
         },
         getSchema() {
+            axios({
+                url: `/schema/${this.currentResource.slug}`
+            }).then((response) => {
+                this.tableFields = response.data.tableFields
+
+                this.showBulkActions && this.tableFields.unshift(this.vuetableSelection);
+                (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
+            });
+
             this.customFilterFields = [
                 "name",
                 "description"
             ];
-
-            this.tableFields =  [
-                {
-                    name: "name",
-                    title: "Name",
-                    sortField: "name",
-                    filterable: true,
-                    searchable: true
-                }, {
-                    name: "description",
-                    sortField: "description",
-                    filterable: true,
-                    searchable: true
-                }, {
-                    name: "users"
-                }
-            ];
-
-            this.showBulkActions && this.tableFields.unshift(this.vuetableSelection);
-            (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
         },
         getSelectedRows() {
             return this.$refs.Vuetable.selectedTo;
@@ -398,6 +387,9 @@ export default {
             this.$refs.Vuetable.tablePagination = data;
             this.showPagination && this.showPaginationBottom && this.$refs.paginationBottom.setPaginationData(data);
             this.showPagination && this.showPaginationTop && this.$refs.paginationTop.setPaginationData(data);
+        },
+        runAction(action) {
+            this.bulkMethods[action](this.$refs.Vuetable.selectedTo);
         },
         setBulkActions() {
             this.bulkActions.forEach(action => {
@@ -497,7 +489,6 @@ export default {
             font-style: normal;
             content: "\f0d8"
         }
-        // add icons
     }
     .sorted-asc {
         ::after {
@@ -505,7 +496,6 @@ export default {
             font-style: normal;
             content: "\f0d7"
         }
-        // add icons
     }
 
     .pagination.menu {

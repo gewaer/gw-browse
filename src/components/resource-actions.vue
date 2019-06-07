@@ -17,7 +17,7 @@
                             :key="action.name"
                             class="dropdown-item"
                             href="#"
-                            @click.prevent="bulkMethods[action.action]()"
+                            @click.prevent="$emit('run-action', action.action)"
                         >
                             {{ action.name }}
                         </a>
@@ -83,12 +83,6 @@ export default {
             type: Array,
             default() {
                 return [];
-            }
-        },
-        bulkMethods: {
-            type: Object,
-            default() {
-                return {};
             }
         },
         currentResource: {
