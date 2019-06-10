@@ -19,7 +19,7 @@
 
         <resource-actions
             v-if="showResourceActions"
-            :bulk-actions="bulkActions"
+            :bulk-actions="bulkActionsList"
             :bulk-methods="bulkActionsMethods"
             :current-resource="currentResource"
             :custom-filter-fields="customFilterFields"
@@ -268,8 +268,8 @@ export default {
     },
     data() {
         return {
+            bulkActionsList: [],
             bulkActionsMethods: {},
-            currentResource: {},
             customFilterFields: [],
             pagination: {
                 activeClass: "active",
@@ -307,6 +307,9 @@ export default {
         };
     },
     computed: {
+        currentResource() {
+            return this.resources.find(resource => resource.slug == this.$route.params.resource);
+        },
         filterableFields() {
             return this.tableFields.filter(field => field.filterable).map(field => field.name);
         },
@@ -314,15 +317,14 @@ export default {
             return this.tableFields.filter(field => field.searchable).map(field => field.name);
         }
     },
-    created() {
-        this.setBulkActions();
-        this.setPerPage();
-        this.getResource(this.$route.params.resource);
-        this.getSchema(this.$route.params.resource);
+    watch: {
+        currentResource() {
+            this.getSchema(this.$route.params.resource);
+        }
     },
-    beforeRouteUpdate(to, from, next) {
-        this.getResource(to.params.resource);
-        next();
+    created() {
+        this.setPerPage();
+        this.getSchema(this.$route.params.resource);
     },
     methods: {
         bulkDelete() {},
@@ -354,23 +356,18 @@ export default {
 
             return fields.map(field => `${field}:${separator}${encodedParams}${separator}`).join(";");
         },
-        getResource(resourceName) {
-            this.currentResource = this.resources.find(resource => resource.slug == resourceName);
-        },
         getSchema() {
             axios({
                 url: `/schema/${this.currentResource.slug}`
             }).then((response) => {
-                this.tableFields = response.data.tableFields
+                this.tableFields = response.data.tableFields;
+                const bulkActions = response.data.bulkActions || [];
 
+                this.validateBulkActions(bulkActions);
+                this.setBulkActions(bulkActions);
                 this.showBulkActions && this.tableFields.unshift(this.vuetableSelection);
                 (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
             });
-
-            this.customFilterFields = [
-                "name",
-                "description"
-            ];
         },
         getSelectedRows() {
             return this.$refs.Vuetable.selectedTo;
@@ -389,9 +386,16 @@ export default {
             this.showPagination && this.showPaginationTop && this.$refs.paginationTop.setPaginationData(data);
         },
         runAction(action) {
-            this.bulkMethods[action](this.$refs.Vuetable.selectedTo);
+            this.bulkActionsMethods[action](this.$refs.Vuetable.selectedTo);
         },
-        setBulkActions() {
+        setBulkActions(bulkActions = []) {
+            if (!this.showResourceActions || !this.showBulkActions) {
+                return;
+            }
+
+            !bulkActions.length && (bulkActions = this.bulkActions);
+            this.bulkActionsList = bulkActions;
+
             this.bulkActions.forEach(action => {
                 this.bulkActionsMethods[action.action] = this.bulkMethods[action.action] || this[action.action];
             });
@@ -399,6 +403,13 @@ export default {
         setPerPage() {
             const optionIncluded = this.resultsPerPageOptions.includes(this.resultsPerPage);
             this.perPage = optionIncluded ? this.resultsPerPage : this.resultsPerPageOptions[0];
+        },
+        validateBulkActions(actions) {
+            const areValid = actions.every(action => action.name && action.action);
+
+            if (!areValid) {
+                throw new Error("Invalid bulk action definition.");
+            }
         }
     }
 }
