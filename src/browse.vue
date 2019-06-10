@@ -9,17 +9,17 @@
         >
             <custom-filters-form
                 :fields="customFilterFields"
-                :resource-name="currentResource.name"
+                :resource-name="currentResource.slug"
                 mode="form"
                 @saved="closeAddCustomFilter()"
             />
         </modal>
 
-        <h3 class="section-title p-l-10">{{ currentResource.title }}</h3>
+        <h3 class="section-title p-l-10">{{ currentResource.name }}</h3>
 
         <resource-actions
             v-if="showResourceActions"
-            :bulk-actions="bulkActions"
+            :bulk-actions="bulkActionsList"
             :bulk-methods="bulkActionsMethods"
             :current-resource="currentResource"
             :custom-filter-fields="customFilterFields"
@@ -28,6 +28,7 @@
             :show-bulk-actions="showBulkActions"
             :show-create-resource="showCreateResource"
             @getData="getData"
+            @run-action="runAction"
             @show-custom-filters-form="$modal.show('custom-filters-form')"
         />
         <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
@@ -57,9 +58,9 @@
         <div class="card m-b-0">
             <div class="card-block">
                 <div class="table-responsive">
-                    <!-- :api-url="`/${currentResource.name}`" -->
                     <vuetable
                         ref="Vuetable"
+                        :api-url="`/${currentResource.slug}`"
                         :append-params="vuetableQueryParams"
                         :css="vuetableStyles"
                         :data-path="dataPath"
@@ -70,7 +71,6 @@
                         :query-params="queryParams"
                         :pagination-path="paginationPath"
                         :show-sort-icons="true"
-                        api-url="/roles"
                         class="table table-hover table-condensed"
                         track-by="id"
                         @vuetable:pagination-data="onPaginationData"
@@ -207,7 +207,7 @@ export default {
             type: Array,
             required: true,
             validator(options) {
-                return options.every(option => option.name && option.title);
+                return options.every(option => option.name && option.slug);
             }
         },
         resultsPerPage: {
@@ -268,8 +268,8 @@ export default {
     },
     data() {
         return {
+            bulkActionsList: [],
             bulkActionsMethods: {},
-            currentResource: {},
             customFilterFields: [],
             pagination: {
                 activeClass: "active",
@@ -307,6 +307,9 @@ export default {
         };
     },
     computed: {
+        currentResource() {
+            return this.resources.find(resource => resource.slug == this.$route.params.resource);
+        },
         filterableFields() {
             return this.tableFields.filter(field => field.filterable).map(field => field.name);
         },
@@ -314,15 +317,14 @@ export default {
             return this.tableFields.filter(field => field.searchable).map(field => field.name);
         }
     },
-    created() {
-        this.setBulkActions();
-        this.setPerPage();
-        this.getResource(this.$route.params.resource);
-        this.getSchema(this.$route.params.resource);
+    watch: {
+        currentResource() {
+            this.getSchema(this.$route.params.resource);
+        }
     },
-    beforeRouteUpdate(to, from, next) {
-        this.getResource(to.params.resource);
-        next();
+    created() {
+        this.setPerPage();
+        this.getSchema(this.$route.params.resource);
     },
     methods: {
         bulkDelete() {},
@@ -354,34 +356,18 @@ export default {
 
             return fields.map(field => `${field}:${separator}${encodedParams}${separator}`).join(";");
         },
-        getResource(resourceName) {
-            this.currentResource = this.resources.find(resource => resource.name == resourceName);
-        },
         getSchema() {
-            this.customFilterFields = [
-                "name",
-                "description"
-            ];
+            axios({
+                url: `/schema/${this.currentResource.slug}`
+            }).then((response) => {
+                this.tableFields = response.data.tableFields;
+                const bulkActions = response.data.bulkActions || [];
 
-            this.tableFields =  [
-                {
-                    name: "name",
-                    title: "Name",
-                    sortField: "name",
-                    filterable: true,
-                    searchable: true
-                }, {
-                    name: "description",
-                    sortField: "description",
-                    filterable: true,
-                    searchable: true
-                }, {
-                    name: "users"
-                }
-            ];
-
-            this.showBulkActions && this.tableFields.unshift(this.vuetableSelection);
-            (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
+                this.validateBulkActions(bulkActions);
+                this.setBulkActions(bulkActions);
+                this.showBulkActions && this.tableFields.unshift(this.vuetableSelection);
+                (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
+            });
         },
         getSelectedRows() {
             return this.$refs.Vuetable.selectedTo;
@@ -399,7 +385,17 @@ export default {
             this.showPagination && this.showPaginationBottom && this.$refs.paginationBottom.setPaginationData(data);
             this.showPagination && this.showPaginationTop && this.$refs.paginationTop.setPaginationData(data);
         },
-        setBulkActions() {
+        runAction(action) {
+            this.bulkActionsMethods[action](this.$refs.Vuetable.selectedTo);
+        },
+        setBulkActions(bulkActions = []) {
+            if (!this.showResourceActions || !this.showBulkActions) {
+                return;
+            }
+
+            !bulkActions.length && (bulkActions = this.bulkActions);
+            this.bulkActionsList = bulkActions;
+
             this.bulkActions.forEach(action => {
                 this.bulkActionsMethods[action.action] = this.bulkMethods[action.action] || this[action.action];
             });
@@ -407,6 +403,13 @@ export default {
         setPerPage() {
             const optionIncluded = this.resultsPerPageOptions.includes(this.resultsPerPage);
             this.perPage = optionIncluded ? this.resultsPerPage : this.resultsPerPageOptions[0];
+        },
+        validateBulkActions(actions) {
+            const areValid = actions.every(action => action.name && action.action);
+
+            if (!areValid) {
+                throw new Error("Invalid bulk action definition.");
+            }
         }
     }
 }
@@ -497,7 +500,6 @@ export default {
             font-style: normal;
             content: "\f0d8"
         }
-        // add icons
     }
     .sorted-asc {
         ::after {
@@ -505,7 +507,6 @@ export default {
             font-style: normal;
             content: "\f0d7"
         }
-        // add icons
     }
 
     .pagination.menu {

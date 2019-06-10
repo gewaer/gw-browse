@@ -31,8 +31,11 @@ Here is an implementation example of the component:
 <template>
     <gw-browse
         ref="gwBrowse"
+        :bulk-actions="bulkActions"
+        :bulk-methods="bulkMethods"
         :http-options="{ baseURL, headers: { Authorization: token }}"
         :pagination-data="paginationData"
+        :pagination-path="''"
         :resources="resources"
     />
 </template>
@@ -41,6 +44,7 @@ Here is an implementation example of the component:
 ```javascript
 import { mapState } from "vuex";
 import GwBrowse from "@/npm-components/gw-browse/src/browse"
+import "@gewaer/gw-browse/dist/gw-browse.css";
 
 export default {
     name: "Browse",
@@ -50,6 +54,20 @@ export default {
     data() {
         return {
             baseURL: process.env.VUE_APP_BASE_API_URL,
+            bulkActions: [
+                {
+                    name: "Mark Completed",
+                    action: "markCompleted"
+                },
+                // Default bulk methods can still be used just be defining them. If needed, you can overwrite them.
+                {
+                    name: "Delete",
+                    action: "bulkDelete"
+                }
+            ],
+            bulkMethods: {
+                markCompleted: this.markCompleted
+            },
             token: this.$store.state.User.token || Cookies.get("token")
         }
     },
@@ -59,6 +77,17 @@ export default {
         })
     },
     methods: {
+        markCompleted(selected) {
+            axios({
+                url: "/some/endpoint",
+                method: "POST",
+                data: {
+                    ids: selected
+                }
+            }).then((response) => {
+                // do something
+            });
+        },
         paginationData(data) {
             const paginationData = {
                 total: parseInt(data.total_rows),
@@ -129,7 +158,7 @@ export default {
 * **default:** `{}` _(empty object)_
 * **use:**
 
-    Specify custom bulk methods to execute to selected records.
+    Specify custom bulk methods to execute to selected records. You can see an example in the provided code sample.
 
 ### **pagination-data**
 
