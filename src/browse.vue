@@ -31,96 +31,113 @@
             @run-action="runAction"
             @show-custom-filters-form="$modal.show('custom-filters-form')"
         />
-        <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
-            <template v-if="showResultsPerPage">
-                <div class="col-auto">
-                    <label class="mb-0">Results per page:</label>
-                </div>
-                <div class="col-auto">
-                    <multiselect
-                        v-model="perPage"
-                        :allow-empty="false"
-                        :show-labels="false"
-                        :options="resultsPerPageOptions"
-                        :searchable="false"
-                        placeholder=""
-                    />
-                </div>
-                <div v-show="totalPages > 1" class="col-auto separator">|</div>
-            </template>
-            <vuetable-pagination
-                ref="paginationTop"
-                :css="pagination"
-                class="col-auto"
-                @vuetable-pagination:change-page="onChangePage"
-            />
-        </div>
-        <div class="card m-b-0">
-            <div class="card-block">
-                <div class="table-responsive">
-                    <vuetable
-                        ref="Vuetable"
-                        :api-url="`/${currentResource.slug}`"
-                        :append-params="vuetableQueryParams"
-                        :css="vuetableStyles"
-                        :data-path="dataPath"
-                        :fields="tableFields"
-                        :http-fetch="httpFetch"
-                        :http-options="httpOptions"
-                        :per-page="perPage"
-                        :query-params="queryParams"
-                        :pagination-path="paginationPath"
-                        :show-sort-icons="true"
-                        class="table table-hover table-condensed"
-                        track-by="id"
-                        @vuetable:pagination-data="onPaginationData"
-                    >
-                        <template slot="actions">
-                            <div class="btn-group">
-                                <button
-                                    v-if="showActionsEdit"
-                                    type="button"
-                                    class="btn btn-primary btn-sm"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    v-if="showActionsDelete"
-                                    type="button"
-                                    class="btn btn-danger btn-sm"
-                                >
-                                    Delete
-                                </button>
-                            </div>
-                        </template>
-                    </vuetable>
+        <div v-show="!loading">
+            <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
+                <template v-if="showResultsPerPage">
+                    <div class="col-auto">
+                        <label class="mb-0">Results per page:</label>
+                    </div>
+                    <div class="col-auto">
+                        <multiselect
+                            v-model="perPage"
+                            :allow-empty="false"
+                            :show-labels="false"
+                            :options="resultsPerPageOptions"
+                            :searchable="false"
+                            placeholder=""
+                        />
+                    </div>
+                    <div v-show="totalPages > 1" class="col-auto separator">|</div>
+                </template>
+                <vuetable-pagination
+                    ref="paginationTop"
+                    :css="pagination"
+                    class="col-auto"
+                    @vuetable-pagination:change-page="onChangePage"
+                />
+            </div>
+            <div class="card m-b-0">
+                <div class="card-block">
+                    <div class="table-responsive">
+                        <vuetable
+                            ref="Vuetable"
+                            :api-url="`/${currentResource.slug}`"
+                            :append-params="vuetableQueryParams"
+                            :css="vuetableStyles"
+                            :data-path="dataPath"
+                            :fields="tableFields"
+                            :http-fetch="httpFetch"
+                            :http-options="httpOptions"
+                            :per-page="perPage"
+                            :query-params="queryParams"
+                            :pagination-path="paginationPath"
+                            :show-sort-icons="true"
+                            class="table table-hover table-condensed"
+                            track-by="id"
+                            @vuetable:load-error="response => $emit('load-error', response)"
+                            @vuetable:loaded="loading = false"
+                            @vuetable:loading="loading = true"
+                            @vuetable:pagination-data="onPaginationData"
+                        >
+                            <slot
+                                slot="actions"
+                                slot-scope="props"
+                                v-bind="{ ...props }"
+                                name="actions"
+                            >
+                                <div class="btn-group">
+                                    <button
+                                        v-if="showActionsEdit"
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        @click="editResource(props.rowData.id)"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        v-if="showActionsDelete"
+                                        type="button"
+                                        class="btn btn-danger btn-sm"
+                                        @click="confirmDelete(props)"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </slot>
+                        </vuetable>
+                    </div>
                 </div>
             </div>
+            <div v-if="showPagination && showPaginationBottom" class="pagination-controls pc-bottom row">
+                <template v-if="showResultsPerPage">
+                    <div class="col-auto">
+                        <label class="mb-0">Results per page:</label>
+                    </div>
+                    <div class="col-auto">
+                        <multiselect
+                            v-model="perPage"
+                            :allow-empty="false"
+                            :show-labels="false"
+                            :options="resultsPerPageOptions"
+                            :searchable="false"
+                            placeholder=""
+                        />
+                    </div>
+                    <div v-show="totalPages > 1" class="col-auto separator">|</div>
+                </template>
+                <vuetable-pagination
+                    ref="paginationBottom"
+                    :css="pagination"
+                    class="col-auto"
+                    @vuetable-pagination:change-page="onChangePage"
+                />
+            </div>
         </div>
-        <div v-if="showPagination && showPaginationBottom" class="pagination-controls pc-bottom row">
-            <template v-if="showResultsPerPage">
-                <div class="col-auto">
-                    <label class="mb-0">Results per page:</label>
-                </div>
-                <div class="col-auto">
-                    <multiselect
-                        v-model="perPage"
-                        :allow-empty="false"
-                        :show-labels="false"
-                        :options="resultsPerPageOptions"
-                        :searchable="false"
-                        placeholder=""
-                    />
-                </div>
-                <div v-show="totalPages > 1" class="col-auto separator">|</div>
-            </template>
-            <vuetable-pagination
-                ref="paginationBottom"
-                :css="pagination"
-                class="col-auto"
-                @vuetable-pagination:change-page="onChangePage"
-            />
-        </div>
+        <slot name="loading">
+            <div v-show="loading" class="loading">
+                <img src="./assets/progress-circle.svg" width="48" height="48">
+            </div>
+        </slot>
     </div>
 </template>
 
@@ -129,6 +146,7 @@ import _clone from "lodash/clone";
 import CustomFiltersForm from "./components/custom-filters-form";
 import ResourceActions from "./components/resource-actions";
 import CheckboxField from "./components/checkbox-field";
+import ResourceDeleteModal from "./components/resource-delete-modal";
 
 export default {
     name: "GwBrowse",
@@ -271,6 +289,7 @@ export default {
             bulkActionsList: [],
             bulkActionsMethods: {},
             customFilterFields: [],
+            loading: true,
             pagination: {
                 activeClass: "active",
                 icons: {
@@ -330,6 +349,48 @@ export default {
         bulkDelete() {},
         closeAddCustomFilter() {
             this.$modal.hide("custom-filters-form");
+        },
+        confirmDelete(data) {
+            this.$modal.show(ResourceDeleteModal, {
+                buttons: [{
+                    title: "Confirm",
+                    handler: () => {
+                        this.deleteResource(data);
+                    }
+                }, {
+                    title: "Cancel",
+                    class: "btn-primary",
+                    handler: () => {
+                        this.$modal.hide("delete-resource");
+                    }
+                }]
+            }, {
+                adaptive: true,
+                clickToClose: false,
+                draggable: true,
+                height: "auto",
+                name: "delete-resource",
+                scrollable: true,
+                width: 317
+            });
+        },
+        deleteResource(data) {
+            axios({
+                url: `/${this.currentResource.slug}/${data.rowData.id}`,
+                method: "DELETE"
+            }).then((response) => {
+                this.$emit("delete-success", response, data);
+                this.$refs.Vuetable.refresh();
+            }).catch((error) => {
+                this.$emit("delete-error", error, data);
+            }).finally(() => {
+                this.$modal.hide("delete-resource");
+            });
+        },
+        editResource(resourceId) {
+            this.$router.push({
+                path: `/${this.currentResource.slug}/${resourceId}`
+            });
         },
         exportCsv() {},
         exportPdf() {},
@@ -492,6 +553,11 @@ export default {
                 }
             }
         }
+    }
+
+    .loading {
+        display: flex;
+        justify-content: center;
     }
 
     .sorted-desc {
