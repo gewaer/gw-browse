@@ -407,7 +407,7 @@ export default {
         },
         editResource(resourceId) {
             this.$router.push({
-                path: `/${this.currentResource.slug}/${resourceId}`
+                path: `/${this.currentResource.slug}/${resourceId}/edit`
             });
         },
         exportCsv() {},
