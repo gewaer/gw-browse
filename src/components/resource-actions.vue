@@ -25,11 +25,11 @@
                 </dropdown>
                 <router-link
                     v-if="showCreateResource"
-                    :to="{ name: 'create-resource', params: { resource: currentResource.name }}"
+                    :to="{ name: 'create-resource', params: { resource: currentResource.slug }}"
                     class="add-record-btn btn btn-primary"
                 >
                     <i class="fa fa-plus-circle"/>
-                    Add {{ currentResource.title }}
+                    Add {{ currentResource.name }}
                 </router-link>
                 <div class="input-group search-bar">
                     <input
