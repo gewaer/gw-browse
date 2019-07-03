@@ -353,25 +353,23 @@ export default {
         confirmDelete(data) {
             this.$modal.show(ResourceDeleteModal, {
                 buttons: [{
-                    title: "Confirm",
-                    handler: () => {
-                        this.deleteResource(data);
-                    }
-                }, {
                     title: "Cancel",
-                    class: "btn-primary",
                     handler: () => {
                         this.$modal.hide("delete-resource");
+                    }
+                }, {
+                    title: "Confirm",
+                    class: "btn-danger",
+                    handler: () => {
+                        this.deleteResource(data);
                     }
                 }]
             }, {
                 adaptive: true,
                 clickToClose: false,
-                draggable: true,
                 height: "auto",
                 name: "delete-resource",
-                scrollable: true,
-                width: 317
+                width: 500
             });
         },
         deleteResource(data) {
@@ -536,6 +534,24 @@ export default {
                     font-weight: bold;
                     color: black;
                     height: 50px;
+                    font-family: inherit;
+                    font-size: 12px;
+                    opacity: 0.8;
+                    letter-spacing: initial;
+
+                    i {
+                        float: left !important;
+                        margin-right: 10px;
+                        line-height: 18px;
+                    }
+
+                    &.sortable:hover {
+                        color: var(--base-color);
+                    }
+
+                    &:first-child {
+                        padding-left: 10px !important;
+                    }
                 }
             }
         }
