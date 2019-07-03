@@ -86,22 +86,40 @@
                                 name="actions"
                             >
                                 <div class="btn-group">
-                                    <button
-                                        v-if="showActionsEdit"
-                                        type="button"
-                                        class="btn btn-primary btn-sm"
-                                        @click="editResource(props.rowData.id)"
+                                    <slot
+                                        v-bind="{ ...props }"
+                                        name="actions-before"
+                                    />
+                                    <slot
+                                        v-bind="{ ...props }"
+                                        name="actions-edit"
                                     >
-                                        Edit
-                                    </button>
-                                    <button
-                                        v-if="showActionsDelete"
-                                        type="button"
-                                        class="btn btn-danger btn-sm"
-                                        @click="confirmDelete(props)"
+                                        <button
+                                            v-if="showActionsEdit"
+                                            type="button"
+                                            class="btn btn-primary btn-sm"
+                                            @click="editResource(props.rowData.id)"
+                                        >
+                                            Edit
+                                        </button>
+                                    </slot>
+                                    <slot
+                                        v-bind="{ ...props }"
+                                        name="actions-delete"
                                     >
-                                        Delete
-                                    </button>
+                                        <button
+                                            v-if="showActionsDelete"
+                                            type="button"
+                                            class="btn btn-danger btn-sm"
+                                            @click="confirmDelete(props)"
+                                        >
+                                            Delete
+                                        </button>
+                                    </slot>
+                                    <slot
+                                        v-bind="{ ...props }"
+                                        name="actions-after"
+                                    />
                                 </div>
                             </slot>
                         </vuetable>
@@ -387,7 +405,7 @@ export default {
         },
         editResource(resourceId) {
             this.$router.push({
-                path: `/${this.currentResource.slug}/${resourceId}`
+                path: `/${this.currentResource.slug}/${resourceId}/edit`
             });
         },
         exportCsv() {},
