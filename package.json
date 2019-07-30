@@ -1,6 +1,6 @@
 {
   "name": "@gewaer/gw-browse",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Base browse component for the Gewaer platform.",
   "main": "./dist/gw-browse.umd.min.js",
   "files": [
@@ -34,9 +34,9 @@
     "vuetable-2": "^2.0.0-beta.4"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.6.0",
-    "@vue/cli-plugin-eslint": "^3.6.0",
-    "@vue/cli-service": "^3.6.0",
+    "@vue/cli-plugin-babel": "^3.9.2",
+    "@vue/cli-plugin-eslint": "^3.9.2",
+    "@vue/cli-service": "^3.9.3",
     "eslint": "^5.9.0",
     "node-sass": "^4.10.0",
     "pre-commit": "^1.2.2",
