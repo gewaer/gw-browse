@@ -6,7 +6,9 @@
         <div class="modal-footer">
             <div class="row w-100">
                 <div v-for="(button, index) in buttons" :key="'button-' + index" class="col">
-                    <button :class="button.class" class="btn btn-block" @click="button.handler">{{ button.title }}</button>
+                    <button :class="button.class" class="btn btn-block" @click="button.handler">
+                        {{ button.title }}
+                    </button>
                 </div>
             </div>
         </div>

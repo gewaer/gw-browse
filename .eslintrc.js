@@ -38,7 +38,9 @@ module.exports = {
             flatTernaryExpressions: true
         }],
         "linebreak-style": ["error"],
-        "new-cap": "error",
+        "new-cap": ["error", {
+            capIsNew: false
+        }],
         "newline-per-chained-call": 0,
         "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
         "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
