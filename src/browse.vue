@@ -15,7 +15,9 @@
             />
         </modal>
 
-        <h3 class="section-title p-l-10">{{ currentResource.name }}</h3>
+        <h3 class="section-title p-l-10">
+            {{ currentResource.name }}
+        </h3>
 
         <resource-actions
             v-if="showResourceActions"
@@ -47,7 +49,9 @@
                             placeholder=""
                         />
                     </div>
-                    <div v-show="totalPages > 1" class="col-auto separator">|</div>
+                    <div v-show="totalPages > 1" class="col-auto separator">
+                        |
+                    </div>
                 </template>
                 <vuetable-pagination
                     ref="paginationTop"
@@ -141,7 +145,9 @@
                             placeholder=""
                         />
                     </div>
-                    <div v-show="totalPages > 1" class="col-auto separator">|</div>
+                    <div v-show="totalPages > 1" class="col-auto separator">
+                        |
+                    </div>
                 </template>
                 <vuetable-pagination
                     ref="paginationBottom"
@@ -153,7 +159,7 @@
         </div>
         <slot name="loading">
             <div v-show="loading" class="loading">
-                <img src="./assets/progress-circle.svg" width="48" height="48">
+                <img src="https://mc-canvas.s3.amazonaws.com/progress-circle.svg" width="48" height="48">
             </div>
         </slot>
     </div>
