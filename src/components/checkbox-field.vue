@@ -7,7 +7,7 @@
                 type="checkbox"
                 @change="toggleAllCheckbox($event)"
             >
-            <label :for="`vuetable-checkbox-${id}`"/>
+            <label :for="`vuetable-checkbox-${id}`" />
         </div>
     </th>
     <td v-else class="vuetable-td-component-checkbox">
@@ -18,7 +18,7 @@
                 type="checkbox"
                 @change="toggleCheckbox(rowData, $event)"
             >
-            <label :for="`vuetable-checkbox-${id}`"/>
+            <label :for="`vuetable-checkbox-${id}`" />
         </div>
     </td>
 </template>

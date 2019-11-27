@@ -154,7 +154,7 @@
         </div>
         <slot name="loading">
             <div v-show="loading" class="loading">
-                <img src="./assets/progress-circle.svg" width="48" height="48">
+                <img src="https://mc-canvas.s3.amazonaws.com/progress-circle.svg" width="48" height="48">
             </div>
         </slot>
     </div>

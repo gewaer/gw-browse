@@ -10,13 +10,15 @@
             <div class="col">
                 <div class="row align-items-center m-b-20">
                     <div class="col-auto">
-                        <div class="step-number">1</div>
+                        <div class="step-number">
+                            1
+                        </div>
                     </div>
                     <div class="col">
                         <div class="form-group required">
                             <input
-                                v-validate="'required'"
                                 v-model="filterData.name"
+                                v-validate="'required'"
                                 class="form-control"
                                 type="text"
                                 data-vv-as="filter name"
@@ -31,7 +33,9 @@
                 </div>
                 <div class="row m-b-20">
                     <div class="col-auto">
-                        <div class="step-number">2</div>
+                        <div class="step-number">
+                            2
+                        </div>
                     </div>
                     <div class="col">
                         <label>Add a condition</label>
@@ -44,9 +48,9 @@
                                 <div class="row filter-row">
                                     <div class="form-group filters-conditions col-12">
                                         <multiselect
+                                            v-model="filter.field"
                                             v-validate="'required'"
                                             :allow-empty="false"
-                                            v-model="filter.field"
                                             :data-vv-name="`filter-field-${filter.key}`"
                                             :show-labels="false"
                                             :options="fields"
@@ -58,9 +62,9 @@
                                     </div>
                                     <div class="form-group filters-conditions col-12 col-sm-auto">
                                         <multiselect
+                                            v-model="filter.operator"
                                             v-validate="'required'"
                                             :allow-empty="false"
-                                            v-model="filter.operator"
                                             :data-vv-name="`filter-operator-${filter.key}`"
                                             :show-labels="false"
                                             :options="operators"
@@ -72,8 +76,8 @@
                                     </div>
                                     <div class="form-group required col-12 col-sm">
                                         <input
-                                            v-validate="'required'"
                                             v-model="filter.value"
+                                            v-validate="'required'"
                                             :name="`filter-value-${filter.key}`"
                                             type="text"
                                             data-vv-as="filter value"
@@ -86,9 +90,9 @@
                                     </div>
                                     <div class="form-group filters-conditions col-12 col-sm-auto">
                                         <multiselect
+                                            v-model="filter.conector"
                                             v-validate="'required'"
                                             :allow-empty="false"
-                                            v-model="filter.conector"
                                             :data-vv-name="`filter-conector-${filter.key}`"
                                             :show-labels="false"
                                             :options="['and', 'or']"
@@ -102,13 +106,13 @@
                             </div>
                             <div class="col-auto">
                                 <a class="d-flex flex-column" href="#" @click.prevent="removeFilter(index)">
-                                    <i class="fa fa-minus-circle d-flex justify-content-center"/>
+                                    <i class="fa fa-minus-circle d-flex justify-content-center" />
                                     remove
                                 </a>
                             </div>
                         </div>
                         <a class="d-flex align-items-center justify-content-center" href="#" @click.prevent="addFilter()">
-                            <i class="fa fa-plus-circle"/>
+                            <i class="fa fa-plus-circle" />
                             Add a condition
                         </a>
                     </div>
@@ -117,10 +121,14 @@
         </div>
         <div class="row modal-footer">
             <div class="col">
-                <button class="btn btn-block" @click="$modal.hide('custom-filters-form')">Cancel</button>
+                <button class="btn btn-block" @click="$modal.hide('custom-filters-form')">
+                    Cancel
+                </button>
             </div>
             <div class="col">
-                <button class="btn btn-block btn-primary" @click="create()">Create</button>
+                <button class="btn btn-block btn-primary" @click="create()">
+                    Create
+                </button>
             </div>
         </div>
     </div>
