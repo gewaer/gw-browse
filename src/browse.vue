@@ -16,7 +16,7 @@
         </modal>
 
         <h4 class="section-title">{{ currentResource.name }}</h4>
-        <h1 class="title">Lorem Ipsun</h1>
+        <!-- <h1 class="title">Lorem Ipsun</h1> -->
 
         <resource-actions
             v-if="showResourceActions"
@@ -86,40 +86,42 @@
                                 v-bind="{ ...props }"
                                 name="actions"
                             >
-                                <slot
-                                    v-bind="{ ...props }"
-                                    name="actions-before"
-                                />
-                                <slot
-                                    v-bind="{ ...props }"
-                                    name="actions-edit"
-                                >
-                                    <button
-                                        v-if="showActionsEdit"
-                                        type="button"
-                                        class="btn btn-primary btn-sm"
-                                        @click="editResource(props.rowData.id)"
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <slot
+                                        v-bind="{ ...props }"
+                                        name="actions-before"
+                                    />
+                                    <slot
+                                        v-bind="{ ...props }"
+                                        name="actions-edit"
                                     >
-                                        <i class="fa fa-edit"/>
-                                    </button>
-                                </slot>
-                                <slot
-                                    v-bind="{ ...props }"
-                                    name="actions-delete"
-                                >
-                                    <button
-                                        v-if="showActionsDelete"
-                                        type="button"
-                                        class="btn btn-danger btn-sm"
-                                        @click="confirmDelete(props)"
+                                        <button
+                                            v-if="showActionsEdit"
+                                            type="button"
+                                            class="btn btn-primary btn-sm"
+                                            @click="editResource(props.rowData.id)"
+                                        >
+                                            <i class="fa fa-edit"/>
+                                        </button>
+                                    </slot>
+                                    <slot
+                                        v-bind="{ ...props }"
+                                        name="actions-delete"
                                     >
-                                        <i class="fa fa-trash-alt"/>
-                                    </button>
-                                </slot>
-                                <slot
-                                    v-bind="{ ...props }"
-                                    name="actions-after"
-                                />
+                                        <button
+                                            v-if="showActionsDelete"
+                                            type="button"
+                                            class="btn btn-danger btn-sm"
+                                            @click="confirmDelete(props)"
+                                        >
+                                            <i class="fa fa-trash-alt"/>
+                                        </button>
+                                    </slot>
+                                    <slot
+                                        v-bind="{ ...props }"
+                                        name="actions-after"
+                                    />
+                                </div>
                             </slot>
                         </vuetable>
                     </div>
@@ -635,7 +637,7 @@ export default {
         }
 
         .multiselect {
-            width: 75px;
+            width: 85px;
         }
 
         .separator {

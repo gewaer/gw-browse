@@ -1,6 +1,6 @@
 <template>
     <div class="browse-actions row">
-        <div class="input-group search-bar col">
+        <div class="input-group search-bar col-12 col-md-6 col-lg">
             <input
                 v-model="search.text"
                 type="text"
@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div class="browse-list-filters d-flex align-items-center col">
+        <div class="browse-list-filters d-flex align-items-center col-12 col-md-6 col-lg">
             <span class="mr-3">Filters</span>
             <multiselect
                 v-model="search.filters"
@@ -40,7 +40,7 @@
             </multiselect>
         </div>
 
-        <dropdown v-if="showBulkActions" class="bulk-actions col-auto">
+        <dropdown v-if="showBulkActions" :is-icon="false" class="bulk-actions col-auto">
             <button
                 id="bulk-actions"
                 slot="btn"
@@ -67,7 +67,7 @@
                 :to="{ name: 'create-resource', params: { resource: currentResource.slug }}"
                 class="add-record-btn btn btn-primary"
             >
-                <i class="fa fa-plus-circle"/>
+                <i class="d-none d-sm-inline fa fa-plus-circle"/>
                 Add {{ currentResource.name }}
             </router-link>
         </div>
@@ -140,16 +140,22 @@ export default {
     align-items: center;
     margin-bottom: 35px;
 
-    .browse-list-filters {
-        .multiselect__tags {
-            min-width: 280px;
+    .search-bar {
+        @media(max-width: $lg) {
+            margin-bottom: 10px;
         }
+    }
 
+    .browse-list-filters {
         .custom-filters-form-btn {
             background-color: var(--base-color);
             color: white;
             padding: 5px;
             cursor: pointer;
+        }
+
+        @media(max-width: $lg) {
+            margin-bottom: 10px;
         }
     }
 }
