@@ -134,6 +134,7 @@ export default {
     }
 }
 </script>
+
 <style lang="scss">
 .browse-actions {
     display: flex;
@@ -141,7 +142,7 @@ export default {
     margin-bottom: 35px;
 
     .search-bar {
-        @media(max-width: $lg) {
+        @media(max-width: 991px) {
             margin-bottom: 10px;
         }
     }
@@ -154,7 +155,7 @@ export default {
             cursor: pointer;
         }
 
-        @media(max-width: $lg) {
+        @media(max-width: 991px) {
             margin-bottom: 10px;
         }
     }
