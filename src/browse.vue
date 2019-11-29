@@ -15,8 +15,9 @@
             />
         </modal>
 
-        <h4 class="section-title">{{ currentResource.name }}</h4>
-        <!-- <h1 class="title">Lorem Ipsun</h1> -->
+        <h4 class="section-title">
+            {{ currentResource.name }}
+        </h4>
 
         <resource-actions
             v-if="showResourceActions"
@@ -50,7 +51,9 @@
                                     placeholder=""
                                 />
                             </div>
-                            <div v-show="totalPages > 1" class="col-auto separator">|</div>
+                            <div v-show="totalPages > 1" class="col-auto separator">
+                                |
+                            </div>
                         </template>
                         <vuetable-pagination
                             ref="paginationTop"
@@ -101,7 +104,7 @@
                                             class="btn btn-primary btn-sm"
                                             @click="editResource(props.rowData.id)"
                                         >
-                                            <i class="fa fa-edit"/>
+                                            <i class="fa fa-edit" />
                                         </button>
                                     </slot>
                                     <slot
@@ -114,7 +117,7 @@
                                             class="btn btn-danger btn-sm"
                                             @click="confirmDelete(props)"
                                         >
-                                            <i class="fa fa-trash-alt"/>
+                                            <i class="fa fa-trash-alt" />
                                         </button>
                                     </slot>
                                     <slot
@@ -140,7 +143,9 @@
                                     placeholder=""
                                 />
                             </div>
-                            <div v-show="totalPages > 1" class="col-auto separator">|</div>
+                            <div v-show="totalPages > 1" class="col-auto separator">
+                                |
+                            </div>
                         </template>
                         <vuetable-pagination
                             ref="paginationBottom"

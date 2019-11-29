@@ -9,12 +9,12 @@
             >
             <div v-if="showClearSearch" class="input-group-append">
                 <button class="btn btn-danger btn-sm" @click="clearSearch()">
-                    <i class="fa fa-times"/>
+                    <i class="fa fa-times" />
                 </button>
             </div>
             <div class="input-group-append">
                 <button class="btn btn-primary" @click="getData()">
-                    <i class="fa fa-search"/>
+                    <i class="fa fa-search" />
                     Search
                 </button>
             </div>
@@ -32,7 +32,7 @@
                 <template v-if="customFilterFields.length" slot="afterList">
                     <div class="custom-filters-form-btn option__desc">
                         <a class="option__title" @click="$emit('show-custom-filters-form')">
-                            <i class="fa fa-plus"/>
+                            <i class="fa fa-plus" />
                             Add custom Filter
                         </a>
                     </div>
@@ -67,7 +67,7 @@
                 :to="{ name: 'create-resource', params: { resource: currentResource.slug }}"
                 class="add-record-btn btn btn-primary"
             >
-                <i class="d-none d-sm-inline fa fa-plus-circle"/>
+                <i class="d-none d-sm-inline fa fa-plus-circle" />
                 Add {{ currentResource.name }}
             </router-link>
         </div>
