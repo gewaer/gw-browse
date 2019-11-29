@@ -1,75 +1,75 @@
 <template>
-    <div class="card">
-        <div class="card-block">
-            <div class="browse-list-row">
-                <dropdown v-if="showBulkActions" class="bulk-actions">
-                    <button
-                        id="bulk-actions"
-                        slot="btn"
-                        class="btn btn-info dropdown-toggle"
-                        type="button"
-                    >
-                        Bulk actions
-                    </button>
-                    <div slot="body">
-                        <a
-                            v-for="action in bulkActions"
-                            :key="action.name"
-                            class="dropdown-item"
-                            href="#"
-                            @click.prevent="$emit('run-action', action.action)"
-                        >
-                            {{ action.name }}
+    <div class="browse-actions row">
+        <div class="input-group search-bar col-12 col-md-6 col-lg">
+            <input
+                v-model="search.text"
+                type="text"
+                class="form-control"
+                @keydown.enter="getData()"
+            >
+            <div v-if="showClearSearch" class="input-group-append">
+                <button class="btn btn-danger btn-sm" @click="clearSearch()">
+                    <i class="fa fa-times" />
+                </button>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-primary" @click="getData()">
+                    <i class="fa fa-search" />
+                    Search
+                </button>
+            </div>
+        </div>
+
+        <div class="browse-list-filters d-flex align-items-center col-12 col-md-6 col-lg">
+            <span class="mr-3">Filters</span>
+            <multiselect
+                v-model="search.filters"
+                :multiple="true"
+                :show-labels="false"
+                :options="filterableFields"
+                @input="getData()"
+            >
+                <template v-if="customFilterFields.length" slot="afterList">
+                    <div class="custom-filters-form-btn option__desc">
+                        <a class="option__title" @click="$emit('show-custom-filters-form')">
+                            <i class="fa fa-plus" />
+                            Add custom Filter
                         </a>
                     </div>
-                </dropdown>
-                <router-link
-                    v-if="showCreateResource"
-                    :to="{ name: 'create-resource', params: { resource: currentResource.slug }}"
-                    class="add-record-btn btn btn-primary"
+                </template>
+            </multiselect>
+        </div>
+
+        <dropdown v-if="showBulkActions" :is-icon="false" class="bulk-actions col-auto">
+            <button
+                id="bulk-actions"
+                slot="btn"
+                class="btn btn-info dropdown-toggle"
+                type="button"
+            >
+                Bulk actions
+            </button>
+            <div slot="body">
+                <a
+                    v-for="action in bulkActions"
+                    :key="action.name"
+                    class="dropdown-item"
+                    href="#"
+                    @click.prevent="$emit('run-action', action.action)"
                 >
-                    <i class="fa fa-plus-circle" />
-                    Add {{ currentResource.name }}
-                </router-link>
-                <div class="input-group search-bar">
-                    <input
-                        v-model="search.text"
-                        type="text"
-                        class="form-control"
-                        @keydown.enter="getData()"
-                    >
-                    <div v-if="showClearSearch" class="input-group-append">
-                        <button class="btn btn-danger btn-sm" @click="clearSearch()">
-                            <i class="fa fa-times" />
-                        </button>
-                    </div>
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" @click="getData()">
-                            <i class="fa fa-search" />
-                            Search
-                        </button>
-                    </div>
-                </div>
-                <div class="browse-list-filters d-flex align-items-center">
-                    <span class="mr-3">Filters</span>
-                    <multiselect
-                        v-model="search.filters"
-                        :multiple="true"
-                        :show-labels="false"
-                        :options="filterableFields"
-                        @input="getData()"
-                    >
-                        <template v-if="customFilterFields.length" slot="afterList">
-                            <div class="custom-filters-form-btn option__desc">
-                                <a class="option__title" @click="$emit('show-custom-filters-form')">
-                                    <i class="fa fa-plus" />
-                                    Add custom Filter
-                                </a>
-                            </div>
-                        </template>
-                    </multiselect>
-                </div>
+                    {{ action.name }}
+                </a>
             </div>
+        </dropdown>
+        <div class="col-auto">
+            <router-link
+                v-if="showCreateResource"
+                :to="{ name: 'create-resource', params: { resource: currentResource.slug }}"
+                class="add-record-btn btn btn-primary"
+            >
+                <i class="d-none d-sm-inline fa fa-plus-circle" />
+                Add {{ currentResource.name }}
+            </router-link>
         </div>
     </div>
 </template>
@@ -134,3 +134,29 @@ export default {
     }
 }
 </script>
+<style lang="scss">
+.browse-actions {
+    display: flex;
+    align-items: center;
+    margin-bottom: 35px;
+
+    .search-bar {
+        @media(max-width: $lg) {
+            margin-bottom: 10px;
+        }
+    }
+
+    .browse-list-filters {
+        .custom-filters-form-btn {
+            background-color: var(--base-color);
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        @media(max-width: $lg) {
+            margin-bottom: 10px;
+        }
+    }
+}
+</style>

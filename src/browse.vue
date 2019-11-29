@@ -15,9 +15,9 @@
             />
         </modal>
 
-        <h3 class="section-title p-l-10">
+        <h4 class="section-title">
             {{ currentResource.name }}
-        </h3>
+        </h4>
 
         <resource-actions
             v-if="showResourceActions"
@@ -34,34 +34,34 @@
             @show-custom-filters-form="$modal.show('custom-filters-form')"
         />
         <div v-show="!loading">
-            <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
-                <template v-if="showResultsPerPage">
-                    <div class="col-auto">
-                        <label class="mb-0">Results per page:</label>
-                    </div>
-                    <div class="col-auto">
-                        <multiselect
-                            v-model="perPage"
-                            :allow-empty="false"
-                            :show-labels="false"
-                            :options="resultsPerPageOptions"
-                            :searchable="false"
-                            placeholder=""
-                        />
-                    </div>
-                    <div v-show="totalPages > 1" class="col-auto separator">
-                        |
-                    </div>
-                </template>
-                <vuetable-pagination
-                    ref="paginationTop"
-                    :css="pagination"
-                    class="col-auto"
-                    @vuetable-pagination:change-page="onChangePage"
-                />
-            </div>
             <div class="card m-b-0">
                 <div class="card-block">
+                    <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
+                        <template v-if="showResultsPerPage">
+                            <div class="col-auto">
+                                <label class="mb-0">Results per page:</label>
+                            </div>
+                            <div class="col-auto">
+                                <multiselect
+                                    v-model="perPage"
+                                    :allow-empty="false"
+                                    :show-labels="false"
+                                    :options="resultsPerPageOptions"
+                                    :searchable="false"
+                                    placeholder=""
+                                />
+                            </div>
+                            <div v-show="totalPages > 1" class="col-auto separator">
+                                |
+                            </div>
+                        </template>
+                        <vuetable-pagination
+                            ref="paginationTop"
+                            :css="pagination"
+                            class="col-auto"
+                            @vuetable-pagination:change-page="onChangePage"
+                        />
+                    </div>
                     <div class="table-responsive">
                         <vuetable
                             ref="Vuetable"
@@ -76,7 +76,7 @@
                             :query-params="queryParams"
                             :pagination-path="paginationPath"
                             :show-sort-icons="true"
-                            class="table table-hover table-condensed"
+                            class="table table-condensed"
                             track-by="id"
                             @vuetable:load-error="response => $emit('load-error', response)"
                             @vuetable:loaded="loading = false"
@@ -89,7 +89,7 @@
                                 v-bind="{ ...props }"
                                 name="actions"
                             >
-                                <div class="btn-group">
+                                <div class="d-flex align-items-center justify-content-end">
                                     <slot
                                         v-bind="{ ...props }"
                                         name="actions-before"
@@ -104,7 +104,7 @@
                                             class="btn btn-primary btn-sm"
                                             @click="editResource(props.rowData.id)"
                                         >
-                                            Edit
+                                            <i class="fa fa-edit" />
                                         </button>
                                     </slot>
                                     <slot
@@ -117,7 +117,7 @@
                                             class="btn btn-danger btn-sm"
                                             @click="confirmDelete(props)"
                                         >
-                                            Delete
+                                            <i class="fa fa-trash-alt" />
                                         </button>
                                     </slot>
                                     <slot
@@ -128,33 +128,33 @@
                             </slot>
                         </vuetable>
                     </div>
-                </div>
-            </div>
-            <div v-if="showPagination && showPaginationBottom" class="pagination-controls pc-bottom row">
-                <template v-if="showResultsPerPage">
-                    <div class="col-auto">
-                        <label class="mb-0">Results per page:</label>
-                    </div>
-                    <div class="col-auto">
-                        <multiselect
-                            v-model="perPage"
-                            :allow-empty="false"
-                            :show-labels="false"
-                            :options="resultsPerPageOptions"
-                            :searchable="false"
-                            placeholder=""
+                    <div v-if="showPagination && showPaginationBottom" class="pagination-controls pc-bottom row">
+                        <template v-if="showResultsPerPage">
+                            <div class="col-auto">
+                                <label class="mb-0">Results per page:</label>
+                            </div>
+                            <div class="col-auto">
+                                <multiselect
+                                    v-model="perPage"
+                                    :allow-empty="false"
+                                    :show-labels="false"
+                                    :options="resultsPerPageOptions"
+                                    :searchable="false"
+                                    placeholder=""
+                                />
+                            </div>
+                            <div v-show="totalPages > 1" class="col-auto separator">
+                                |
+                            </div>
+                        </template>
+                        <vuetable-pagination
+                            ref="paginationBottom"
+                            :css="pagination"
+                            class="col-auto"
+                            @vuetable-pagination:change-page="onChangePage"
                         />
                     </div>
-                    <div v-show="totalPages > 1" class="col-auto separator">
-                        |
-                    </div>
-                </template>
-                <vuetable-pagination
-                    ref="paginationBottom"
-                    :css="pagination"
-                    class="col-auto"
-                    @vuetable-pagination:change-page="onChangePage"
-                />
+                </div>
             </div>
         </div>
         <slot name="loading">
@@ -500,40 +500,9 @@ export default {
 
 <style lang="scss">
 .browse-list {
-    .browse-list-row {
-        display: flex;
-        align-items: center;
-        padding: 8px;
-
-        .bulk-actions {
-            padding-left: 5px;
-            padding-right: 15px;
-        }
-
-        .search-bar {
-            margin-left: 25px;
-            max-width: 320px;
-        }
-
-        .browse-list-filters {
-            margin-left: auto;
-            max-width: 450px;
-
-            .multiselect__tags {
-                min-width: 280px;
-            }
-
-            .custom-filters-form-btn {
-                background-color: var(--base-color);
-                color: white;
-                padding: 5px;
-                cursor: pointer;
-            }
-        }
-    }
-
     table {
         table-layout: initial !important;
+        border-collapse: initial;
 
         thead, tbody {
             tr {
@@ -547,25 +516,21 @@ export default {
         }
 
         thead {
-            background-color: white;
-
             tr {
                 th {
-                    padding-left: 10px !important;
-                    padding-right: 10px !important;
-                    padding-top: 0;
-                    padding-bottom: 0;
                     font-weight: bold;
-                    color: black;
+                    color: #A5A5A5;
                     height: 50px;
                     font-family: inherit;
-                    font-size: 12px;
-                    opacity: 0.8;
+                    font-size: 14px;
                     letter-spacing: initial;
+                    text-transform: uppercase;
+                    border-top: none;
+                    border-bottom: none;
 
                     i {
-                        float: left !important;
-                        margin-right: 10px;
+                        float: none !important;
+                        margin-left: 10px;
                         line-height: 18px;
                     }
 
@@ -580,16 +545,26 @@ export default {
             }
         }
 
-        tr {
-            td {
-            padding: 10px;
+        tbody {
+            tr {
+                td {
+                    border-top: 1px solid #E1E8ED;
+                    color: #4B4B4B;
+                    font-weight: 600;
 
-                .checkbox label:before {
-                    top: 0;
+                    &:first-child {
+                        border-left: 1px solid #E1E8ED;
+                    }
+
+                    &:last-child {
+                        border-right: 1px solid #E1E8ED;
+                    }
                 }
 
-                p {
-                    margin-bottom: 0;
+                &:last-child {
+                    td {
+                        border-bottom: 1px solid #E1E8ED;
+                    }
                 }
             }
         }
@@ -667,7 +642,7 @@ export default {
         }
 
         .multiselect {
-            width: 75px;
+            width: 85px;
         }
 
         .separator {
