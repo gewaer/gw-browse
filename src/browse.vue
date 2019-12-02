@@ -171,12 +171,16 @@ import CustomFiltersForm from "./components/custom-filters-form";
 import ResourceActions from "./components/resource-actions";
 import CheckboxField from "./components/checkbox-field";
 import ResourceDeleteModal from "./components/resource-delete-modal";
+import Vuetable from "vuetable-2";
+import VuetablePagination from "vuetable-2/src/components/VuetablePagination";
 
 export default {
     name: "GwBrowse",
     components: {
         CustomFiltersForm,
-        ResourceActions
+        ResourceActions,
+        Vuetable,
+        VuetablePagination
     },
     props: {
         appendParams: {
