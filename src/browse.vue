@@ -251,10 +251,7 @@ export default {
         },
         resources: {
             type: Array,
-            required: true,
-            validator(options) {
-                return options.every(option => option.name && option.slug);
-            }
+            required: true
         },
         resultsPerPage: {
             type: Number,
