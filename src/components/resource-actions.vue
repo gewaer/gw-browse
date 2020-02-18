@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div class="browse-list-filters d-flex align-items-center col-12 col-md-6 col-lg">
+        <div v-if="showSearchFilters" class="browse-list-filters d-flex align-items-center col-12 col-md-6 col-lg">
             <span class="mr-3">Filters</span>
             <multiselect
                 v-model="search.filters"
@@ -64,7 +64,7 @@
         <div class="col-auto">
             <router-link
                 v-if="showCreateResource"
-                :to="{ name: 'create-resource', params: { resource: currentResource.slug }}"
+                :to="createUrl"
                 class="add-record-btn btn btn-primary"
             >
                 <i class="d-none d-sm-inline fa fa-plus-circle" />
@@ -84,6 +84,10 @@ export default {
             default() {
                 return [];
             }
+        },
+        createResourceUrl: {
+            type: [Object, String],
+            default: null
         },
         currentResource: {
             type: Object,
@@ -110,12 +114,22 @@ export default {
         showCreateResource: {
             type: Boolean,
             default: true
+        },
+        showSearchFilters: {
+            type: Boolean,
+            default: true
         }
     },
     data() {
         return {
+            createUrl: { name: "create-resource", params: { resource: this.currentResource.slug } },
             search: _clone(this.searchOptions),
             showClearSearch: false
+        }
+    },
+    created() {
+        if (this.createResourceUrl) {
+            this.createUrl = this.createResourceUrl;
         }
     },
     methods: {
