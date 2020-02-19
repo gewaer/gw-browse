@@ -9,26 +9,27 @@
         >
             <custom-filters-form
                 :fields="customFilterFields"
-                :resource-name="currentResource.slug"
+                :resource-name="resource.slug"
                 mode="form"
                 @saved="closeAddCustomFilter()"
             />
         </modal>
 
-        <h4 class="section-title">
-            {{ currentResource.name }}
+        <h4 v-if="showTitle" class="section-title">
+            {{ resource.name }}
         </h4>
 
         <resource-actions
             v-if="showResourceActions"
             :bulk-actions="bulkActionsList"
-            :bulk-methods="bulkActionsMethods"
-            :current-resource="currentResource"
+            :create-resource-url="createResourceUrl"
+            :current-resource="resource"
             :custom-filter-fields="customFilterFields"
             :filterable-fields="filterableFields"
             :search-options="searchOptions"
             :show-bulk-actions="showBulkActions"
             :show-create-resource="showCreateResource"
+            :show-search-filters="showSearchFilters"
             @getData="getData"
             @run-action="runAction"
             @show-custom-filters-form="$modal.show('custom-filters-form')"
@@ -65,7 +66,7 @@
                     <div class="table-responsive">
                         <vuetable
                             ref="Vuetable"
-                            :api-url="`/${currentResource.slug}`"
+                            :api-url="`/${resource.endpoint || resource.slug}`"
                             :append-params="vuetableQueryParams"
                             :css="vuetableStyles"
                             :data-path="dataPath"
@@ -217,6 +218,10 @@ export default {
                 return {}
             }
         },
+        createResourceUrl: {
+            type: [Object, String],
+            default: null
+        },
         dataPath: {
             type: String,
             default: "data"
@@ -249,8 +254,8 @@ export default {
             type: String,
             default: "links.pagination"
         },
-        resources: {
-            type: Array,
+        resource: {
+            type: Object,
             required: true
         },
         resultsPerPage: {
@@ -307,6 +312,14 @@ export default {
         showResultsPerPage: {
             type: Boolean,
             default: true
+        },
+        showSearchFilters: {
+            type: Boolean,
+            default: true
+        },
+        showTitle: {
+            type: Boolean,
+            default: true
         }
     },
     data() {
@@ -325,7 +338,6 @@ export default {
                 }
             },
             perPage: 25,
-            tableFields: [],
             totalPages: 0,
             vuetableActions: {
                 name: "actions",
@@ -333,6 +345,7 @@ export default {
                 titleClass: "table-actions",
                 dataClass: "table-actions"
             },
+            tableFields: [],
             vuetableQueryParams: _clone(this.appendParams),
             vuetableSelection: {
                 name: CheckboxField,
@@ -351,9 +364,6 @@ export default {
         };
     },
     computed: {
-        currentResource() {
-            return this.resources.find(resource => resource.slug == this.$route.params.resource);
-        },
         filterableFields() {
             return this.tableFields.filter(field => field.filterable).map(field => field.name);
         },
@@ -362,13 +372,16 @@ export default {
         }
     },
     watch: {
-        currentResource() {
-            this.getSchema(this.$route.params.resource);
+        appendParams() {
+            this.vuetableQueryParams = _clone(this.appendParams);
+        },
+        resource() {
+            this.getSchema(this.resource);
         }
     },
     created() {
         this.setPerPage();
-        this.getSchema(this.$route.params.resource);
+        this.getSchema(this.resource);
     },
     methods: {
         bulkDelete() {},
@@ -399,11 +412,11 @@ export default {
         },
         deleteResource(data) {
             axios({
-                url: `/${this.currentResource.slug}/${data.rowData.id}`,
+                url: `/${this.resource.slug}/${data.rowData.id}`,
                 method: "DELETE"
             }).then((response) => {
                 this.$emit("delete-success", response, data);
-                this.$refs.Vuetable.refresh();
+                this.refresh();
             }).catch((error) => {
                 this.$emit("delete-error", error, data);
             }).finally(() => {
@@ -412,7 +425,7 @@ export default {
         },
         editResource(resourceId) {
             this.$router.push({
-                path: `/${this.currentResource.slug}/${resourceId}/edit`
+                path: `/${this.resource.slug}/${resourceId}/edit`
             });
         },
         exportCsv() {},
@@ -433,16 +446,14 @@ export default {
             }
 
             this.vuetableQueryParams.q = `(${params})`;
-            this.$refs.Vuetable.refresh();
+            this.refresh();
         },
         getParams(fields, searchOptions, separator = "%") {
-            const encodedParams = encodeURIComponent(searchOptions.text);
-
-            return fields.map(field => `${field}:${separator}${encodedParams}${separator}`).join(";");
+            return fields.map(field => `${field}:${separator}${searchOptions.text}${separator}`).join(";");
         },
         getSchema() {
             axios({
-                url: `/schema/${this.currentResource.slug}`
+                url: `/schema/${this.resource.slug}`
             }).then((response) => {
                 this.tableFields = response.data.tableFields;
                 const bulkActions = response.data.bulkActions || [];
@@ -468,6 +479,9 @@ export default {
             this.$refs.Vuetable.tablePagination = data;
             this.showPagination && this.showPaginationBottom && this.$refs.paginationBottom.setPaginationData(data);
             this.showPagination && this.showPaginationTop && this.$refs.paginationTop.setPaginationData(data);
+        },
+        refresh() {
+            this.$refs.Vuetable.refresh();
         },
         runAction(action) {
             this.bulkActionsMethods[action](this.$refs.Vuetable.selectedTo);

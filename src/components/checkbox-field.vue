@@ -28,7 +28,9 @@ import VuetableFieldCheckboxMixin from "vuetable-2/src/components/VuetableFieldC
 
 export default {
     name: "CheckboxField",
-    mixins: [VuetableFieldCheckboxMixin],
+    mixins: [
+        VuetableFieldCheckboxMixin
+    ],
     data() {
         return {
             id: Math.random().toString(16).replace(".", "")
