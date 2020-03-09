@@ -35,126 +35,124 @@
             @show-custom-filters-form="$modal.show('custom-filters-form')"
         />
         <div v-show="!loading">
-            <div class="card m-b-0">
-                <div class="card-block">
-                    <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
-                        <template v-if="showResultsPerPage">
-                            <div class="col-auto">
-                                <label class="mb-0">Results per page:</label>
-                            </div>
-                            <div class="col-auto">
-                                <multiselect
-                                    v-model="perPage"
-                                    :allow-empty="false"
-                                    :show-labels="false"
-                                    :options="resultsPerPageOptions"
-                                    :searchable="false"
-                                    placeholder=""
-                                />
-                            </div>
-                            <div v-show="totalPages > 1" class="col-auto separator">
-                                |
-                            </div>
-                        </template>
-                        <vuetable-pagination
-                            ref="paginationTop"
-                            :css="pagination"
-                            class="col-auto"
-                            @vuetable-pagination:change-page="onChangePage"
-                        />
-                    </div>
-                    <div class="table-responsive">
-                        <vuetable
-                            ref="Vuetable"
-                            :api-url="`/${resource.endpoint || resource.slug}`"
-                            :append-params="vuetableQueryParams"
-                            :css="vuetableStyles"
-                            :data-path="dataPath"
-                            :fields="tableFields"
-                            :http-fetch="httpFetch"
-                            :http-options="httpOptions"
-                            :per-page="perPage"
-                            :query-params="queryParams"
-                            :pagination-path="paginationPath"
-                            :show-sort-icons="true"
-                            class="table table-condensed"
-                            track-by="id"
-                            @vuetable:load-error="response => $emit('load-error', response)"
-                            @vuetable:loaded="loading = false"
-                            @vuetable:loading="loading = true"
-                            @vuetable:pagination-data="onPaginationData"
+            <div class="table-container m-b-0">
+                <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
+                    <template v-if="showResultsPerPage">
+                        <div class="col-auto">
+                            <label class="mb-0">Results per page:</label>
+                        </div>
+                        <div class="col-auto">
+                            <multiselect
+                                v-model="perPage"
+                                :allow-empty="false"
+                                :show-labels="false"
+                                :options="resultsPerPageOptions"
+                                :searchable="false"
+                                placeholder=""
+                            />
+                        </div>
+                        <div v-show="totalPages > 1" class="col-auto separator">
+                            |
+                        </div>
+                    </template>
+                    <vuetable-pagination
+                        ref="paginationTop"
+                        :css="pagination"
+                        class="col-auto"
+                        @vuetable-pagination:change-page="onChangePage"
+                    />
+                </div>
+                <div class="table-responsive">
+                    <vuetable
+                        ref="Vuetable"
+                        :api-url="`/${resource.endpoint || resource.slug}`"
+                        :append-params="vuetableQueryParams"
+                        :css="vuetableStyles"
+                        :data-path="dataPath"
+                        :fields="tableFields"
+                        :http-fetch="httpFetch"
+                        :http-options="httpOptions"
+                        :per-page="perPage"
+                        :query-params="queryParams"
+                        :pagination-path="paginationPath"
+                        :show-sort-icons="true"
+                        class="table table-condensed"
+                        track-by="id"
+                        @vuetable:load-error="response => $emit('load-error', response)"
+                        @vuetable:loaded="loading = false"
+                        @vuetable:loading="loading = true"
+                        @vuetable:pagination-data="onPaginationData"
+                    >
+                        <slot
+                            slot="actions"
+                            slot-scope="props"
+                            v-bind="{ ...props }"
+                            name="actions"
                         >
-                            <slot
-                                slot="actions"
-                                slot-scope="props"
-                                v-bind="{ ...props }"
-                                name="actions"
-                            >
-                                <div class="d-flex align-items-center justify-content-end">
-                                    <slot
-                                        v-bind="{ ...props }"
-                                        name="actions-before"
-                                    />
-                                    <slot
-                                        v-bind="{ ...props }"
-                                        name="actions-edit"
+                            <div class="d-flex align-items-center justify-content-end">
+                                <slot
+                                    v-bind="{ ...props }"
+                                    name="actions-before"
+                                />
+                                <slot
+                                    v-bind="{ ...props }"
+                                    name="actions-edit"
+                                >
+                                    <button
+                                        v-if="showActionsEdit"
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        @click="editResource(props.rowData.id)"
                                     >
-                                        <button
-                                            v-if="showActionsEdit"
-                                            type="button"
-                                            class="btn btn-primary btn-sm"
-                                            @click="editResource(props.rowData.id)"
-                                        >
-                                            <i class="fa fa-edit" />
-                                        </button>
-                                    </slot>
-                                    <slot
-                                        v-bind="{ ...props }"
-                                        name="actions-delete"
+                                        <i class="fa fa-edit" />
+                                    </button>
+                                </slot>
+                                <slot
+                                    v-bind="{ ...props }"
+                                    name="actions-delete"
+                                >
+                                    <button
+                                        v-if="showActionsDelete"
+                                        type="button"
+                                        class="btn btn-danger btn-sm"
+                                        @click="confirmDelete(props)"
                                     >
-                                        <button
-                                            v-if="showActionsDelete"
-                                            type="button"
-                                            class="btn btn-danger btn-sm"
-                                            @click="confirmDelete(props)"
-                                        >
-                                            <i class="fa fa-trash-alt" />
-                                        </button>
-                                    </slot>
-                                    <slot
-                                        v-bind="{ ...props }"
-                                        name="actions-after"
-                                    />
-                                </div>
-                            </slot>
-                        </vuetable>
-                    </div>
-                    <div v-if="showPagination && showPaginationBottom" class="pagination-controls pc-bottom row">
-                        <template v-if="showResultsPerPage">
-                            <div class="col-auto">
-                                <label class="mb-0">Results per page:</label>
-                            </div>
-                            <div class="col-auto">
-                                <multiselect
-                                    v-model="perPage"
-                                    :allow-empty="false"
-                                    :show-labels="false"
-                                    :options="resultsPerPageOptions"
-                                    :searchable="false"
-                                    placeholder=""
+                                        <i class="fa fa-trash-alt" />
+                                    </button>
+                                </slot>
+                                <slot
+                                    v-bind="{ ...props }"
+                                    name="actions-after"
                                 />
                             </div>
-                            <div v-show="totalPages > 1" class="col-auto separator">
-                                |
-                            </div>
-                        </template>
-                        <vuetable-pagination
-                            ref="paginationBottom"
-                            :css="pagination"
-                            class="col-auto"
-                            @vuetable-pagination:change-page="onChangePage"
-                        />
-                    </div>
+                        </slot>
+                    </vuetable>
+                </div>
+                <div v-if="showPagination && showPaginationBottom" class="pagination-controls pc-bottom row">
+                    <template v-if="showResultsPerPage">
+                        <div class="col-auto">
+                            <label class="mb-0">Results per page:</label>
+                        </div>
+                        <div class="col-auto">
+                            <multiselect
+                                v-model="perPage"
+                                :allow-empty="false"
+                                :show-labels="false"
+                                :options="resultsPerPageOptions"
+                                :searchable="false"
+                                placeholder=""
+                            />
+                        </div>
+                        <div v-show="totalPages > 1" class="col-auto separator">
+                            |
+                        </div>
+                    </template>
+                    <vuetable-pagination
+                        ref="paginationBottom"
+                        :css="pagination"
+                        class="col-auto"
+                        @vuetable-pagination:change-page="onChangePage"
+                    />
                 </div>
             </div>
         </div>
