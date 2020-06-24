@@ -43,12 +43,13 @@
                         </div>
                         <div class="col-auto">
                             <multiselect
-                                v-model="perPage"
+                                v-model="selectedPerPage"
                                 :allow-empty="false"
                                 :show-labels="false"
                                 :options="resultsPerPageOptions"
                                 :searchable="false"
                                 placeholder=""
+                                @input="changePerPage"
                             />
                         </div>
                         <div v-show="totalPages > 1" class="col-auto separator">
@@ -135,12 +136,13 @@
                         </div>
                         <div class="col-auto">
                             <multiselect
-                                v-model="perPage"
+                                v-model="selectedPerPage"
                                 :allow-empty="false"
                                 :show-labels="false"
                                 :options="resultsPerPageOptions"
                                 :searchable="false"
                                 placeholder=""
+                                @input="changePerPage"
                             />
                         </div>
                         <div v-show="totalPages > 1" class="col-auto separator">
@@ -336,6 +338,7 @@ export default {
                 }
             },
             perPage: 25,
+            selectedPerPage: 25,
             totalPages: 0,
             vuetableActions: {
                 name: "actions",
@@ -385,6 +388,10 @@ export default {
         bulkDelete() {},
         closeAddCustomFilter() {
             this.$modal.hide("custom-filters-form");
+        },
+        changePerPage() {
+            this.$refs.Vuetable.currentPage = 1;
+            this.perPage = this.selectedPerPage;
         },
         confirmDelete(data) {
             this.$modal.show(ResourceDeleteModal, {
@@ -498,7 +505,8 @@ export default {
         },
         setPerPage() {
             const optionIncluded = this.resultsPerPageOptions.includes(this.resultsPerPage);
-            this.perPage = optionIncluded ? this.resultsPerPage : this.resultsPerPageOptions[0];
+            this.selectedPerPage = optionIncluded ? this.resultsPerPage : this.resultsPerPageOptions[0];
+            this.perPage = this.selectedPerPage;
         },
         validateBulkActions(actions) {
             const areValid = actions.every(action => action.name && action.action);

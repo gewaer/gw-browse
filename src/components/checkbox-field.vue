@@ -38,7 +38,7 @@ export default {
     },
     methods: {
         isAllItemsInCurrentPageSelected() {
-            if (!this.vuetable.tableData) {
+            if (!this.vuetable.tableData || !this.$el) {
                 return;
             }
 
