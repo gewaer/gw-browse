@@ -19,21 +19,24 @@
             {{ resource.name }}
         </h4>
 
-        <resource-actions
-            v-if="showResourceActions"
-            :bulk-actions="bulkActionsList"
-            :create-resource-url="createResourceUrl"
-            :current-resource="resource"
-            :custom-filter-fields="customFilterFields"
-            :filterable-fields="filterableFields"
-            :search-options="searchOptions"
-            :show-bulk-actions="showBulkActions"
-            :show-create-resource="showCreateResource"
-            :show-search-filters="showSearchFilters"
-            @getData="getData"
-            @run-action="runAction"
-            @show-custom-filters-form="$modal.show('custom-filters-form')"
-        />
+        <slot :data="{searchOptions}" name="resource-actions" v-bind="{ searchOptions, getData, filterableFields }">
+            <resource-actions
+                v-if="showResourceActions"
+                :bulk-actions="bulkActionsList"
+                :create-resource-url="createResourceUrl"
+                :current-resource="resource"
+                :custom-filter-fields="customFilterFields"
+                :filterable-fields="filterableFields"
+                :search-options="searchOptions"
+                :show-bulk-actions="showBulkActions"
+                :show-create-resource="showCreateResource"
+                :show-search-filters="showSearchFilters"
+                @getData="getData"
+                @run-action="runAction"
+                @show-custom-filters-form="$modal.show('custom-filters-form')"
+            />
+        </slot>
+
         <div v-show="!loading">
             <div class="table-container m-b-0">
                 <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
@@ -374,6 +377,8 @@ export default {
             this.vuetableQueryParams = _clone(this.appendParams);
         },
         resource() {
+            this.$refs.Vuetable.resetData()
+            this.vuetableQueryParams.q = null
             this.getSchema(this.resource);
         }
     },
@@ -433,14 +438,22 @@ export default {
         },
         getData(searchOptions) {
             let params = "";
+            let fixedFilters = Object.keys(searchOptions.fixedFilters || {})
+            let searchableFields = [];
             searchOptions.text = searchOptions.text.trim();
 
             if (searchOptions.text.length) {
                 if (!searchOptions.filters.length) {
-                    params += this.getParams(this.searchableFields, searchOptions);
+                    searchableFields = this.searchableFields.filter(field => !fixedFilters.includes(field))
                 } else {
-                    params += this.getParams(searchOptions.filters, searchOptions);
+                    searchableFields = searchOptions.filters.filter(field => !fixedFilters.includes(field))
                 }
+                params += this.getParams(searchableFields, searchOptions);
+            }
+
+            if (fixedFilters.length) {
+                fixedFilters = Object.entries(searchOptions.fixedFilters).map(([filterName, value]) => `${filterName}:${value}`).join(";");
+                params = [params, fixedFilters].filter(val => val).join(",");
             }
 
             this.vuetableQueryParams.q = `(${params})`;

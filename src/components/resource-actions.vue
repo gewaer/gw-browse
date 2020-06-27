@@ -20,6 +20,24 @@
             </div>
         </div>
 
+        <div >
+            <date-range-picker
+                v-model="dates"
+                :range-mode="true"
+            ></date-range-picker>
+        </div>
+
+        <div v-if="showStatusFilter">
+            <multiselect
+                v-model="statusFilter"
+                :show-labels="false"
+                :options="statusFilters"
+                placeholder="All Status"
+                @input="getData()"
+            >
+            </multiselect>
+        </div>
+
         <div v-if="showSearchFilters" class="browse-list-filters d-flex align-items-center col-12 col-md-6 col-lg">
             <span class="mr-3">Filters</span>
             <multiselect
@@ -61,6 +79,7 @@
                 </a>
             </div>
         </dropdown>
+
         <div class="col-auto">
             <router-link
                 v-if="showCreateResource"
@@ -76,8 +95,12 @@
 
 <script>
 import _clone from "lodash/clone";
+import DateRangePicker from "./date-range-picker";
 
 export default {
+    components: {
+        DateRangePicker
+    },
     props: {
         bulkActions: {
             type: Array,
@@ -124,7 +147,11 @@ export default {
         return {
             createUrl: { name: "create-resource", params: { resource: this.currentResource.slug } },
             search: _clone(this.searchOptions),
-            showClearSearch: false
+            showClearSearch: false,
+            dates: {
+                start: '',
+                end: ''
+            },
         }
     },
     created() {
