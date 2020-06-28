@@ -40,30 +40,35 @@
         <div v-show="!loading">
             <div class="table-container m-b-0">
                 <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
-                    <template v-if="showResultsPerPage">
-                        <div class="col-auto">
-                            <label class="mb-0">Results per page:</label>
-                        </div>
-                        <div class="col-auto">
-                            <multiselect
-                                v-model="perPage"
-                                :allow-empty="false"
-                                :show-labels="false"
-                                :options="resultsPerPageOptions"
-                                :searchable="false"
-                                placeholder=""
-                            />
-                        </div>
-                        <div v-show="totalPages > 1" class="col-auto separator">
-                            |
-                        </div>
-                    </template>
-                    <vuetable-pagination
-                        ref="paginationTop"
-                        :css="pagination"
-                        class="col-auto"
-                        @vuetable-pagination:change-page="onChangePage"
-                    />
+                    <slot name="before-table-left">
+                    </slot>
+
+                    <div class="d-flex">
+                        <template v-if="showResultsPerPage">
+                            <div class="col-auto">
+                                <label class="mb-0">Results per page:</label>
+                            </div>
+                            <div class="col-auto">
+                                <multiselect
+                                    v-model="perPage"
+                                    :allow-empty="false"
+                                    :show-labels="false"
+                                    :options="resultsPerPageOptions"
+                                    :searchable="false"
+                                    placeholder=""
+                                />
+                            </div>
+                            <div v-show="totalPages > 1" class="col-auto separator">
+                                |
+                            </div>
+                        </template>
+                        <vuetable-pagination
+                            ref="paginationTop"
+                            :css="pagination"
+                            class="col-auto"
+                            @vuetable-pagination:change-page="onChangePage"
+                        />
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <vuetable

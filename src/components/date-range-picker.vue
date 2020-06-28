@@ -48,7 +48,7 @@
             </div>
             <button slot="reference" class="btn btn-primary">
                 Date Range
-                <i class="fa fa-caret-down"></i>
+                <i class="fa fa-caret-down" />
             </button>
         </el-popover>
     </div>

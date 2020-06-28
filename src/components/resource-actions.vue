@@ -20,11 +20,11 @@
             </div>
         </div>
 
-        <div >
+        <div>
             <date-range-picker
                 v-model="dates"
                 :range-mode="true"
-            ></date-range-picker>
+            />
         </div>
 
         <div v-if="showStatusFilter">
@@ -34,8 +34,7 @@
                 :options="statusFilters"
                 placeholder="All Status"
                 @input="getData()"
-            >
-            </multiselect>
+            />
         </div>
 
         <div v-if="showSearchFilters" class="browse-list-filters d-flex align-items-center col-12 col-md-6 col-lg">
@@ -149,9 +148,9 @@ export default {
             search: _clone(this.searchOptions),
             showClearSearch: false,
             dates: {
-                start: '',
-                end: ''
-            },
+                start: "",
+                end: ""
+            }
         }
     },
     created() {
