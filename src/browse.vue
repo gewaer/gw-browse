@@ -40,8 +40,7 @@
         <div v-show="!loading">
             <div class="table-container m-b-0">
                 <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
-                    <slot name="before-table-left">
-                    </slot>
+                    <slot name="before-table-left" />
 
                     <div class="d-flex">
                         <template v-if="showResultsPerPage">
@@ -375,6 +374,10 @@ export default {
         },
         searchableFields() {
             return this.tableFields.filter(field => field.searchable).map(field => field.name);
+        },
+        mainDateField() {
+            const mainDateField = this.tableFields.filter(field => field.dateFilter).map(field => field.name);
+            return mainDateField.length ? mainDateField[0] : "";
         }
     },
     watch: {
@@ -444,22 +447,20 @@ export default {
         getData(searchOptions) {
             let params = "";
             let fixedFilters = Object.keys(searchOptions.fixedFilters || {})
+            let dateFilters = Object.keys(searchOptions.dates || {})
             let searchableFields = [];
             searchOptions.text = searchOptions.text.trim();
 
             if (searchOptions.text.length) {
                 if (!searchOptions.filters.length) {
-                    searchableFields = this.searchableFields.filter(field => !fixedFilters.includes(field))
+                    searchableFields = this.searchableFields.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field))
                 } else {
-                    searchableFields = searchOptions.filters.filter(field => !fixedFilters.includes(field))
+                    searchableFields = searchOptions.filters.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field))
                 }
                 params += this.getParams(searchableFields, searchOptions);
             }
 
-            if (fixedFilters.length) {
-                fixedFilters = Object.entries(searchOptions.fixedFilters).map(([filterName, value]) => `${filterName}:${value}`).join(";");
-                params = [params, fixedFilters].filter(val => val).join(",");
-            }
+            params = this.getFixedFilters(searchOptions, params)
 
             this.vuetableQueryParams.q = `(${params})`;
             this.refresh();
@@ -480,6 +481,31 @@ export default {
                 (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
             });
         },
+
+        getFixedFilters(searchOptions, params) {
+            let fixedFilters = Object.entries(searchOptions.fixedFilters);
+            let dateFilters = Object.entries(searchOptions.dates);
+
+             if (fixedFilters.length || dateFilters.length) {
+                fixedFilters = fixedFilters.map(([filterName, value]) => `${filterName}:${value}`).join(";");
+                
+                if (dateFilters.length && this.mainDateField) {
+                    let dateFilterValue = this.formatDate(searchOptions.dates.start);
+                    if (searchOptions.dates.end) {
+                        dateFilterValue += `,${this.mainDateField}<${this.formatDate(searchOptions.dates.end)}`;
+                    }
+                    dateFilters =`${this.mainDateField}>${dateFilterValue}`;
+                }
+                params = [params, dateFilters, fixedFilters].filter(val => val).join(",");
+            }
+
+            return params;
+        },
+
+        formatDate(date) {
+            return date ? date.toISOString().slice(0,10) : ""
+        },
+
         getSelectedRows() {
             return this.$refs.Vuetable.selectedTo;
         },

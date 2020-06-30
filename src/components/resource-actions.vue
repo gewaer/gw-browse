@@ -20,13 +20,6 @@
             </div>
         </div>
 
-        <div>
-            <date-range-picker
-                v-model="dates"
-                :range-mode="true"
-            />
-        </div>
-
         <div v-if="showStatusFilter">
             <multiselect
                 v-model="statusFilter"
@@ -94,12 +87,8 @@
 
 <script>
 import _clone from "lodash/clone";
-import DateRangePicker from "./date-range-picker";
 
 export default {
-    components: {
-        DateRangePicker
-    },
     props: {
         bulkActions: {
             type: Array,
