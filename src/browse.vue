@@ -490,8 +490,8 @@ export default {
         },
 
         getFixedFilters(searchOptions, params) {
-            let fixedFilters = Object.entries(searchOptions.fixedFilters);
-            const dateFilters = Object.entries(searchOptions.dates);
+            let fixedFilters = Object.entries(searchOptions.fixedFilters || {});
+            const dateFilters = Object.entries(searchOptions.dates || {});
             let dateValues = ""
 
             if (fixedFilters.length || dateFilters.length) {
