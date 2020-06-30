@@ -49,12 +49,13 @@
                             </div>
                             <div class="col-auto">
                                 <multiselect
-                                    v-model="perPage"
+                                    v-model="selectedPerPage"
                                     :allow-empty="false"
                                     :show-labels="false"
                                     :options="resultsPerPageOptions"
                                     :searchable="false"
                                     placeholder=""
+                                    @input="changePerPage"
                                 />
                             </div>
                             <div v-show="totalPages > 1" class="col-auto separator">
@@ -142,12 +143,13 @@
                         </div>
                         <div class="col-auto">
                             <multiselect
-                                v-model="perPage"
+                                v-model="selectedPerPage"
                                 :allow-empty="false"
                                 :show-labels="false"
                                 :options="resultsPerPageOptions"
                                 :searchable="false"
                                 placeholder=""
+                                @input="changePerPage"
                             />
                         </div>
                         <div v-show="totalPages > 1" class="col-auto separator">
@@ -343,6 +345,7 @@ export default {
                 }
             },
             perPage: 25,
+            selectedPerPage: 25,
             totalPages: 0,
             vuetableActions: {
                 name: "actions",
@@ -398,6 +401,10 @@ export default {
         bulkDelete() {},
         closeAddCustomFilter() {
             this.$modal.hide("custom-filters-form");
+        },
+        changePerPage() {
+            this.$refs.Vuetable.currentPage = 1;
+            this.perPage = this.selectedPerPage;
         },
         confirmDelete(data) {
             this.$modal.show(ResourceDeleteModal, {
@@ -485,6 +492,7 @@ export default {
         getFixedFilters(searchOptions, params) {
             let fixedFilters = Object.entries(searchOptions.fixedFilters);
             let dateFilters = Object.entries(searchOptions.dates);
+            let dateValues = ""
 
              if (fixedFilters.length || dateFilters.length) {
                 fixedFilters = fixedFilters.map(([filterName, value]) => `${filterName}:${value}`).join(";");
@@ -494,9 +502,9 @@ export default {
                     if (searchOptions.dates.end) {
                         dateFilterValue += `,${this.mainDateField}<${this.formatDate(searchOptions.dates.end)}`;
                     }
-                    dateFilters =`${this.mainDateField}>${dateFilterValue}`;
+                    dateValues =`${this.mainDateField}>${dateFilterValue}`;
                 }
-                params = [params, dateFilters, fixedFilters].filter(val => val).join(",");
+                params = [params, dateValues, fixedFilters].filter(val => val).join(",");
             }
 
             return params;
@@ -542,7 +550,8 @@ export default {
         },
         setPerPage() {
             const optionIncluded = this.resultsPerPageOptions.includes(this.resultsPerPage);
-            this.perPage = optionIncluded ? this.resultsPerPage : this.resultsPerPageOptions[0];
+            this.selectedPerPage = optionIncluded ? this.resultsPerPage : this.resultsPerPageOptions[0];
+            this.perPage = this.selectedPerPage;
         },
         validateBulkActions(actions) {
             const areValid = actions.every(action => action.name && action.action);

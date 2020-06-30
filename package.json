@@ -1,6 +1,6 @@
 {
   "name": "@gewaer/gw-browse",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Base browse component for the Gewaer platform.",
   "main": "./dist/gw-browse.umd.min.js",
   "files": [
