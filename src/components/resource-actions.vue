@@ -20,16 +20,6 @@
             </div>
         </div>
 
-        <div v-if="showStatusFilter">
-            <multiselect
-                v-model="statusFilter"
-                :show-labels="false"
-                :options="statusFilters"
-                placeholder="All Status"
-                @input="getData()"
-            />
-        </div>
-
         <div v-if="showSearchFilters" class="browse-list-filters d-flex align-items-center col-12 col-md-6 col-lg">
             <span class="mr-3">Filters</span>
             <multiselect
@@ -135,11 +125,7 @@ export default {
         return {
             createUrl: { name: "create-resource", params: { resource: this.currentResource.slug } },
             search: _clone(this.searchOptions),
-            showClearSearch: false,
-            dates: {
-                start: "",
-                end: ""
-            }
+            showClearSearch: false
         }
     },
     created() {

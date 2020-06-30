@@ -453,8 +453,8 @@ export default {
         },
         getData(searchOptions) {
             let params = "";
-            let fixedFilters = Object.keys(searchOptions.fixedFilters || {})
-            let dateFilters = Object.keys(searchOptions.dates || {})
+            const fixedFilters = Object.keys(searchOptions.fixedFilters || {})
+            const dateFilters = Object.keys(searchOptions.dates || {})
             let searchableFields = [];
             searchOptions.text = searchOptions.text.trim();
 
@@ -491,10 +491,10 @@ export default {
 
         getFixedFilters(searchOptions, params) {
             let fixedFilters = Object.entries(searchOptions.fixedFilters);
-            let dateFilters = Object.entries(searchOptions.dates);
+            const dateFilters = Object.entries(searchOptions.dates);
             let dateValues = ""
 
-             if (fixedFilters.length || dateFilters.length) {
+            if (fixedFilters.length || dateFilters.length) {
                 fixedFilters = fixedFilters.map(([filterName, value]) => `${filterName}:${value}`).join(";");
                 
                 if (dateFilters.length && this.mainDateField) {
@@ -502,7 +502,7 @@ export default {
                     if (searchOptions.dates.end) {
                         dateFilterValue += `,${this.mainDateField}<${this.formatDate(searchOptions.dates.end)}`;
                     }
-                    dateValues =`${this.mainDateField}>${dateFilterValue}`;
+                    dateValues = `${this.mainDateField}>${dateFilterValue}`;
                 }
                 params = [params, dateValues, fixedFilters].filter(val => val).join(",");
             }
@@ -511,7 +511,7 @@ export default {
         },
 
         formatDate(date) {
-            return date ? date.toISOString().slice(0,10) : ""
+            return date ? date.toISOString().slice(0, 10) : ""
         },
 
         getSelectedRows() {
