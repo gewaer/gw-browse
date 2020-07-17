@@ -19,7 +19,7 @@
             {{ resource.name }}
         </h4>
 
-        <slot :data="{searchOptions}" name="resource-actions" v-bind="{ searchOptions, getData, filterableFields }">
+        <slot :data="{ searchOptions }" name="resource-actions" v-bind="{ searchOptions, getData, filterableFields }">
             <resource-actions
                 v-if="showResourceActions"
                 :bulk-actions="bulkActionsList"
@@ -40,7 +40,7 @@
         <div v-show="!loading">
             <div class="table-container m-b-0">
                 <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
-                    <slot name="before-table-left" />
+                    <slot name="before-pagination" />
 
                     <div class="d-flex">
                         <template v-if="showResultsPerPage">
@@ -388,8 +388,8 @@ export default {
             this.vuetableQueryParams = _clone(this.appendParams);
         },
         resource() {
-            this.$refs.Vuetable.resetData()
-            this.vuetableQueryParams.q = null
+            this.$refs.Vuetable.resetData();
+            this.vuetableQueryParams.q = null;
             this.getSchema(this.resource);
         }
     },
@@ -453,21 +453,21 @@ export default {
         },
         getData(searchOptions) {
             let params = "";
-            const fixedFilters = Object.keys(searchOptions.fixedFilters || {})
-            const dateFilters = Object.keys(searchOptions.dates || {})
+            const fixedFilters = Object.keys(searchOptions.fixedFilters || {});
+            const dateFilters = Object.keys(searchOptions.dates || {});
             let searchableFields = [];
             searchOptions.text = searchOptions.text.trim();
 
             if (searchOptions.text.length) {
                 if (!searchOptions.filters.length) {
-                    searchableFields = this.searchableFields.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field))
+                    searchableFields = this.searchableFields.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field));
                 } else {
-                    searchableFields = searchOptions.filters.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field))
+                    searchableFields = searchOptions.filters.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field));
                 }
                 params += this.getParams(searchableFields, searchOptions);
             }
 
-            params = this.getFixedFilters(searchOptions, params)
+            params = this.getFixedFilters(searchOptions, params);
 
             this.vuetableQueryParams.q = `(${params})`;
             this.refresh();
@@ -492,11 +492,10 @@ export default {
         getFixedFilters(searchOptions, params) {
             let fixedFilters = Object.entries(searchOptions.fixedFilters || {});
             const dateFilters = Object.entries(searchOptions.dates || {});
-            let dateValues = ""
+            let dateValues = "";
 
             if (fixedFilters.length || dateFilters.length) {
                 fixedFilters = fixedFilters.map(([filterName, value]) => `${filterName}:${value}`).join(";");
-                
                 if (dateFilters.length && this.mainDateField) {
                     let dateFilterValue = this.formatDate(searchOptions.dates.start);
                     if (searchOptions.dates.end) {
@@ -509,11 +508,9 @@ export default {
 
             return params;
         },
-
         formatDate(date) {
-            return date ? date.toISOString().slice(0, 10) : ""
+            return date ? date.toISOString().slice(0, 10) : "";
         },
-
         getSelectedRows() {
             return this.$refs.Vuetable.selectedTo;
         },
