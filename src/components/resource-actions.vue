@@ -61,6 +61,7 @@
                 </a>
             </div>
         </dropdown>
+
         <div class="col-auto">
             <router-link
                 v-if="showCreateResource"
