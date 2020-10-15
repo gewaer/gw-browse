@@ -443,7 +443,11 @@ export default {
         },
         editResource(resourceId) {
             this.$router.push({
-                path: `/${this.resource.slug}/${resourceId}/edit`
+                name: "edit-resource",
+                params: {
+                    resource: this.resource.slug,
+                    id: resourceId
+                }
             });
         },
         exportCsv() {},
