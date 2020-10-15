@@ -19,49 +19,56 @@
             {{ resource.name }}
         </h4>
 
-        <resource-actions
-            v-if="showResourceActions"
-            :bulk-actions="bulkActionsList"
-            :create-resource-url="createResourceUrl"
-            :current-resource="resource"
-            :custom-filter-fields="customFilterFields"
-            :filterable-fields="filterableFields"
-            :search-options="searchOptions"
-            :show-bulk-actions="showBulkActions"
-            :show-create-resource="showCreateResource"
-            :show-search-filters="showSearchFilters"
-            @getData="getData"
-            @run-action="runAction"
-            @show-custom-filters-form="$modal.show('custom-filters-form')"
-        />
+        <slot :data="{ searchOptions }" name="resource-actions" v-bind="{ searchOptions, getData, filterableFields }">
+            <resource-actions
+                v-if="showResourceActions"
+                :bulk-actions="bulkActionsList"
+                :create-resource-url="createResourceUrl"
+                :current-resource="resource"
+                :custom-filter-fields="customFilterFields"
+                :filterable-fields="filterableFields"
+                :search-options="searchOptions"
+                :show-bulk-actions="showBulkActions"
+                :show-create-resource="showCreateResource"
+                :show-search-filters="showSearchFilters"
+                @getData="getData"
+                @run-action="runAction"
+                @show-custom-filters-form="$modal.show('custom-filters-form')"
+            />
+        </slot>
+
         <div v-show="!loading">
             <div class="table-container m-b-0">
                 <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
-                    <template v-if="showResultsPerPage">
-                        <div class="col-auto">
-                            <label class="mb-0">Results per page:</label>
-                        </div>
-                        <div class="col-auto">
-                            <multiselect
-                                v-model="selectedPerPage"
-                                :allow-empty="false"
-                                :show-labels="false"
-                                :options="resultsPerPageOptions"
-                                :searchable="false"
-                                placeholder=""
-                                @input="changePerPage"
-                            />
-                        </div>
-                        <div v-show="totalPages > 1" class="col-auto separator">
-                            |
-                        </div>
-                    </template>
-                    <vuetable-pagination
-                        ref="paginationTop"
-                        :css="pagination"
-                        class="col-auto"
-                        @vuetable-pagination:change-page="onChangePage"
-                    />
+                    <slot name="before-pagination" />
+
+                    <div class="d-flex">
+                        <template v-if="showResultsPerPage">
+                            <div class="col-auto">
+                                <label class="mb-0">Results per page:</label>
+                            </div>
+                            <div class="col-auto">
+                                <multiselect
+                                    v-model="selectedPerPage"
+                                    :allow-empty="false"
+                                    :show-labels="false"
+                                    :options="resultsPerPageOptions"
+                                    :searchable="false"
+                                    placeholder=""
+                                    @input="changePerPage"
+                                />
+                            </div>
+                            <div v-show="totalPages > 1" class="col-auto separator">
+                                |
+                            </div>
+                        </template>
+                        <vuetable-pagination
+                            ref="paginationTop"
+                            :css="pagination"
+                            class="col-auto"
+                            @vuetable-pagination:change-page="onChangePage"
+                        />
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <vuetable
@@ -370,6 +377,10 @@ export default {
         },
         searchableFields() {
             return this.tableFields.filter(field => field.searchable).map(field => field.name);
+        },
+        mainDateField() {
+            const mainDateField = this.tableFields.filter(field => field.dateFilter).map(field => field.name);
+            return mainDateField.length ? mainDateField[0] : "";
         }
     },
     watch: {
@@ -377,6 +388,8 @@ export default {
             this.vuetableQueryParams = _clone(this.appendParams);
         },
         resource() {
+            this.$refs.Vuetable.resetData();
+            this.vuetableQueryParams.q = null;
             this.getSchema(this.resource);
         }
     },
@@ -430,7 +443,11 @@ export default {
         },
         editResource(resourceId) {
             this.$router.push({
-                path: `/${this.resource.slug}/${resourceId}/edit`
+                name: "edit-resource",
+                params: {
+                    resource: this.resource.slug,
+                    id: resourceId
+                }
             });
         },
         exportCsv() {},
@@ -440,15 +457,21 @@ export default {
         },
         getData(searchOptions) {
             let params = "";
+            const fixedFilters = Object.keys(searchOptions.fixedFilters || {});
+            const dateFilters = Object.keys(searchOptions.dates || {});
+            let searchableFields = [];
             searchOptions.text = searchOptions.text.trim();
 
             if (searchOptions.text.length) {
                 if (!searchOptions.filters.length) {
-                    params += this.getParams(this.searchableFields, searchOptions);
+                    searchableFields = this.searchableFields.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field));
                 } else {
-                    params += this.getParams(searchOptions.filters, searchOptions);
+                    searchableFields = searchOptions.filters.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field));
                 }
+                params += this.getParams(searchableFields, searchOptions);
             }
+
+            params = this.getFixedFilters(searchOptions, params);
 
             this.vuetableQueryParams.q = `(${params})`;
             this.refresh();
@@ -468,6 +491,29 @@ export default {
                 this.showBulkActions && this.tableFields.unshift(this.vuetableSelection);
                 (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
             });
+        },
+
+        getFixedFilters(searchOptions, params) {
+            let fixedFilters = Object.entries(searchOptions.fixedFilters || {});
+            const dateFilters = Object.entries(searchOptions.dates || {});
+            let dateValues = "";
+
+            if (fixedFilters.length || dateFilters.length) {
+                fixedFilters = fixedFilters.map(([filterName, value]) => `${filterName}:${value}`).join(";");
+                if (dateFilters.length && this.mainDateField) {
+                    let dateFilterValue = this.formatDate(searchOptions.dates.start);
+                    if (searchOptions.dates.end) {
+                        dateFilterValue += `,${this.mainDateField}<${this.formatDate(searchOptions.dates.end)}`;
+                    }
+                    dateValues = `${this.mainDateField}>${dateFilterValue}`;
+                }
+                params = [params, dateValues, fixedFilters].filter(val => val).join(",");
+            }
+
+            return params;
+        },
+        formatDate(date) {
+            return date ? date.toISOString().slice(0, 10) : "";
         },
         getSelectedRows() {
             return this.$refs.Vuetable.selectedTo;
