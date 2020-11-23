@@ -391,6 +391,7 @@ export default {
             this.$refs.Vuetable.resetData();
             this.vuetableQueryParams.q = null;
             this.getSchema(this.resource);
+            this.resetQueryParams();
         }
     },
     created() {
@@ -560,7 +561,10 @@ export default {
             if (!areValid) {
                 throw new Error("Invalid bulk action definition.");
             }
-        }
+        },
+        resetQueryParams() {
+            this.vuetableQueryParams.q = null
+        },
     }
 }
 </script>
