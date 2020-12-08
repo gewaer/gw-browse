@@ -520,17 +520,17 @@ export default {
             const newFields = [];
             this.extraFields.forEach((fieldDefinition, index) => {
                 // find field to replace the render
-                const fieldIndex = endpointFields.findIndex(field => [fieldDefinition.name, fieldDefinition.field].includes(field.name))
+                const fieldIndex = endpointFields.findIndex(field => [fieldDefinition.name, fieldDefinition.field].includes(field.name));
                 if (fieldIndex != -1) {
                     const fieldName = endpointFields[fieldIndex].name;
                     endpointFields[fieldIndex] = { ...endpointFields[fieldIndex], ...fieldDefinition, fieldName };
                 } else {
-                    newFields.push(index)
+                    newFields.push(index);
                 }
-            })
+            });
             newFields.forEach((fieldIndex) => {
                 endpointFields.push(this.extraFields[fieldIndex]);
-            })
+            });
 
             return endpointFields;
         },
