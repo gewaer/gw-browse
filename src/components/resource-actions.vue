@@ -129,16 +129,16 @@ export default {
             showClearSearch: false
         }
     },
+    computed: {
+        createUrl() {
+            return this.currentResource ? { name: "create-resource", params: { resource: this.currentResource.slug } } : { }
+        }
+    },
     watch: {
         currentResource: {
             handler() {
                 this.search = _clone(this.searchOptions)
-            },
-        }
-    },
-    computed: {
-        createUrl() {
-            return this.currentResource ? { name: "create-resource", params: { resource: this.currentResource.slug } } : { }
+            }
         }
     },
     methods: {

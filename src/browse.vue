@@ -327,6 +327,12 @@ export default {
         showTitle: {
             type: Boolean,
             default: true
+        },
+        extraFields: {
+            type: Array,
+            default() {
+                return []
+            }
         }
     },
     data() {
@@ -484,7 +490,7 @@ export default {
             axios({
                 url: `/schema/${this.resource.slug}`
             }).then((response) => {
-                this.tableFields = response.data.tableFields;
+                this.tableFields = this.processTableFields(response.data.tableFields);
                 const bulkActions = response.data.bulkActions || [];
 
                 this.validateBulkActions(bulkActions);
@@ -512,6 +518,21 @@ export default {
             }
 
             return params;
+        },
+
+        processTableFields(endpointFields) {
+            this.extraFields.forEach((fieldDefinition) => {
+                // find field to replace the render
+                const fieldIndex = endpointFields.findIndex(field => [fieldDefinition.name, fieldDefinition.field].includes(field.name));
+                if (fieldIndex != -1) {
+                    const fieldName = endpointFields[fieldIndex].name;
+                    endpointFields[fieldIndex] = { ...endpointFields[fieldIndex], ...fieldDefinition, fieldName };
+                } else {
+                    endpointFields.push(fieldDefinition);
+                }
+            });
+
+            return endpointFields;
         },
         formatDate(date) {
             return date ? date.toISOString().slice(0, 10) : "";
@@ -564,7 +585,7 @@ export default {
         },
         resetQueryParams() {
             this.vuetableQueryParams.q = null
-        },
+        }
     }
 }
 </script>
