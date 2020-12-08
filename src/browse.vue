@@ -517,19 +517,15 @@ export default {
         },
 
         processTableFields(endpointFields) {
-            const newFields = [];
-            this.extraFields.forEach((fieldDefinition, index) => {
+            this.extraFields.forEach((fieldDefinition) => {
                 // find field to replace the render
                 const fieldIndex = endpointFields.findIndex(field => [fieldDefinition.name, fieldDefinition.field].includes(field.name));
                 if (fieldIndex != -1) {
                     const fieldName = endpointFields[fieldIndex].name;
                     endpointFields[fieldIndex] = { ...endpointFields[fieldIndex], ...fieldDefinition, fieldName };
                 } else {
-                    newFields.push(index);
+                    endpointFields.push(fieldDefinition);
                 }
-            });
-            newFields.forEach((fieldIndex) => {
-                endpointFields.push(this.extraFields[fieldIndex]);
             });
 
             return endpointFields;
