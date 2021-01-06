@@ -80,9 +80,10 @@
                         :fields="tableFields"
                         :http-fetch="httpFetch"
                         :http-options="httpOptions"
+                        :pagination-path="paginationPath"
                         :per-page="perPage"
                         :query-params="queryParams"
-                        :pagination-path="paginationPath"
+                        :row-class="rowClass"
                         :show-sort-icons="true"
                         class="table table-condensed"
                         track-by="id"
@@ -274,6 +275,10 @@ export default {
             default() {
                 return [25, 50, 100];
             }
+        },
+        rowClass: {
+            type: [String, Function],
+            default: ""
         },
         searchOptions: {
             type: Object,
