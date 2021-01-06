@@ -1,12 +1,33 @@
 <template>
     <div class="browse-actions row">
-        <div class="input-group search-bar col-12 col-md-6 col-lg">
+        <div class="input-group search-bar col-12 col-md-7 col-lg-7">
             <input
                 v-model="search.text"
                 type="text"
                 class="form-control"
+                placeholder="search ..."
                 @keydown.enter="getData()"
             >
+            <div v-if="showSearchFilters" class="browse-list-filters d-flex align-items-center">
+                <multiselect
+                    v-model="search.filters"
+                    :multiple="true"
+                    :limit="1"
+                    :show-labels="false"
+                    :options="filterableFields"
+                    placeholder="All fields"
+                    @input="getData()"
+                >
+                    <template v-if="customFilterFields.length" slot="afterList">
+                        <div class="custom-filters-form-btn option__desc">
+                            <a class="option__title" @click="$emit('show-custom-filters-form')">
+                                <i class="fa fa-plus" />
+                                Add custom Filter
+                            </a>
+                        </div>
+                    </template>
+                </multiselect>
+            </div>
             <div v-if="showClearSearch" class="input-group-append">
                 <button class="btn btn-danger btn-sm" @click="clearSearch()">
                     <i class="fa fa-times" />
@@ -20,27 +41,8 @@
             </div>
         </div>
 
-        <div v-if="showSearchFilters" class="browse-list-filters d-flex align-items-center col-12 col-md-6 col-lg">
-            <span class="mr-3">Filters</span>
-            <multiselect
-                v-model="search.filters"
-                :multiple="true"
-                :show-labels="false"
-                :options="filterableFields"
-                @input="getData()"
-            >
-                <template v-if="customFilterFields.length" slot="afterList">
-                    <div class="custom-filters-form-btn option__desc">
-                        <a class="option__title" @click="$emit('show-custom-filters-form')">
-                            <i class="fa fa-plus" />
-                            Add custom Filter
-                        </a>
-                    </div>
-                </template>
-            </multiselect>
-        </div>
 
-        <dropdown v-if="showBulkActions" :is-icon="false" class="bulk-actions col-auto">
+        <dropdown v-if="showBulkActions" :is-icon="false" class="bulk-actions col-auto ml-auto">
             <button
                 id="bulk-actions"
                 slot="btn"
@@ -69,7 +71,7 @@
                 class="add-record-btn btn btn-primary"
             >
                 <i class="d-none d-sm-inline fa fa-plus-circle" />
-                Add {{ currentResource.name }}
+                Add {{ currentResource.title }}
             </router-link>
         </div>
     </div>
@@ -123,14 +125,20 @@ export default {
     },
     data() {
         return {
-            createUrl: { name: "create-resource", params: { resource: this.currentResource.slug } },
             search: _clone(this.searchOptions),
             showClearSearch: false
         }
     },
-    created() {
-        if (this.createResourceUrl) {
-            this.createUrl = this.createResourceUrl;
+    computed: {
+        createUrl() {
+            return this.currentResource ? { name: "create-resource", params: { resource: this.currentResource.slug } } : { }
+        }
+    },
+    watch: {
+        currentResource: {
+            handler() {
+                this.search = _clone(this.searchOptions)
+            }
         }
     },
     methods: {
@@ -163,6 +171,7 @@ export default {
     }
 
     .browse-list-filters {
+        width: 30%;
         .custom-filters-form-btn {
             background-color: var(--base-color);
             color: white;
