@@ -71,7 +71,7 @@
                 class="add-record-btn btn btn-primary"
             >
                 <i class="d-none d-sm-inline fa fa-plus-circle" />
-                Add {{ currentResource.title }}
+                Add {{ singularize(currentResource.title) }}
             </router-link>
         </div>
     </div>
@@ -79,6 +79,7 @@
 
 <script>
 import _clone from "lodash/clone";
+import pluralize from "pluralize";
 
 export default {
     props: {
@@ -153,6 +154,9 @@ export default {
         getData() {
             this.search.text.trim().length && (this.showClearSearch = true) || (this.showClearSearch = false);
             this.$emit("getData", this.search);
+        },
+        singularize(text) {
+            return pluralize.singular(text);
         }
     }
 }
