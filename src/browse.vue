@@ -384,7 +384,7 @@ export default {
     },
     computed: {
         filterableFields() {
-            return this.tableFields.filter(field => field.filterable).map(field => field.name);
+            return this.tableFields.filter(field => field.filterable);
         },
         searchableFields() {
             return this.tableFields.filter(field => field.searchable).map(field => field.name);
