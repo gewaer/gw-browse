@@ -10,12 +10,14 @@
             >
             <div v-if="showSearchFilters" class="browse-list-filters d-flex align-items-center">
                 <multiselect
-                    v-model="search.filters"
-                    :multiple="true"
+                    v-model="searchFilters"
                     :limit="1"
-                    :show-labels="false"
+                    :multiple="true"
                     :options="filterableFields"
+                    :show-labels="false"
+                    label="title"
                     placeholder="All fields"
+                    track-by="name"
                     @input="getData()"
                 >
                     <template v-if="customFilterFields.length" slot="afterList">
@@ -127,6 +129,7 @@ export default {
     data() {
         return {
             search: _clone(this.searchOptions),
+            searchFilters: [],
             showClearSearch: false
         }
     },
@@ -153,6 +156,7 @@ export default {
         },
         getData() {
             this.search.text.trim().length && (this.showClearSearch = true) || (this.showClearSearch = false);
+            this.search.filters = this.searchFilters.reduce((accumulator, item) => accumulator.concat(item.name), []);
             this.$emit("getData", this.search);
         },
         singularize(text) {
