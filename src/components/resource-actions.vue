@@ -135,6 +135,9 @@ export default {
     },
     computed: {
         createUrl() {
+            if (this.createResourceUrl) {
+                return this.createResourceUrl;
+            }
             return this.currentResource ? { name: "create-resource", params: { resource: this.currentResource.slug } } : { }
         }
     },
