@@ -379,7 +379,11 @@ export default {
                 descendingClass: "",
                 descendingIcon: "fa fa-sort-down",
                 sortableIcon: "fa fa-sort"
-            }
+            },
+            sortOrder: [{
+                field: "created_at",
+                direction: "desc"
+            }]
         };
     },
     computed: {
