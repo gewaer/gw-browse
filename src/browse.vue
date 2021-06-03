@@ -85,6 +85,7 @@
                         :query-params="queryParams"
                         :row-class="rowClass"
                         :show-sort-icons="true"
+                        :sort-order="sortOrder"
                         class="table table-condensed"
                         track-by="id"
                         @vuetable:load-error="response => $emit('load-error', response)"
