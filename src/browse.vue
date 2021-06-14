@@ -600,7 +600,7 @@ export default {
         resetSortOrder() {
             this.sortOrder = [{
                 field: "created_at",
-                sortField: 'created_at',
+                sortField: "created_at",
                 direction: "desc"
             }];
         }
