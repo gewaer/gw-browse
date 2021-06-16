@@ -405,6 +405,7 @@ export default {
         },
         resource() {
             this.$refs.Vuetable.resetData();
+            this.resetSortOrder();
             this.vuetableQueryParams.q = null;
             this.getSchema(this.resource);
             this.resetQueryParams();
@@ -595,6 +596,13 @@ export default {
         },
         resetQueryParams() {
             this.vuetableQueryParams.q = null
+        },
+        resetSortOrder() {
+            this.sortOrder = [{
+                field: "created_at",
+                sortField: "created_at",
+                direction: "desc"
+            }];
         }
     }
 }
