@@ -574,8 +574,7 @@ export default {
                 return;
             }
 
-            !bulkActions.length && (bulkActions = this.bulkActions);
-            this.bulkActionsList = bulkActions;
+            this.bulkActionsList = [...bulkActions, ...this.bulkActions];
 
             this.bulkActions.forEach(action => {
                 this.bulkActionsMethods[action.action] = this.bulkMethods[action.action] || this[action.action];
