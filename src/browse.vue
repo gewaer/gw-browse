@@ -517,7 +517,13 @@ export default {
             let dateValues = "";
 
             if (fixedFilters.length || dateFilters.length) {
-                fixedFilters = fixedFilters.map(([filterName, value]) => `${filterName}:${value}`).join(";");
+                fixedFilters = fixedFilters.map(([filterName, value]) => {
+                    if (Array.isArray(value)) {
+                        return `${filterName}${value.join("")}`;
+                    } else {
+                        return `${filterName}:${value}`;
+                    }
+                }).join(",");
                 if (dateFilters.length && this.mainDateField) {
                     let dateFilterValue = this.formatDate(searchOptions.dates.start);
                     if (searchOptions.dates.end) {
