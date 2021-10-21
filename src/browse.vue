@@ -392,7 +392,13 @@ export default {
             return this.tableFields.filter(field => field.filterable);
         },
         searchableFields() {
-            return this.tableFields.filter(field => field.searchable).map(field => field.name);
+            return this.tableFields.filter(field => field.searchable).map(field => {
+                if (typeof field.name === "object") {
+                    return field.name.searchName;
+                }
+
+                return field.name;
+            });
         },
         mainDateField() {
             const mainDateField = this.tableFields.filter(field => field.dateFilter).map(field => field.name);
