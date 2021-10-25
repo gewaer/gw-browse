@@ -28,6 +28,7 @@
                 :custom-filter-fields="customFilterFields"
                 :filterable-fields="filterableFields"
                 :search-options="searchOptions"
+                :search-placeholder="searchPlaceholder"
                 :show-bulk-actions="showBulkActions"
                 :show-create-resource="showCreateResource"
                 :show-search-filters="showSearchFilters"
@@ -289,6 +290,10 @@ export default {
                     filters: []
                 }
             }
+        },
+        searchPlaceholder: {
+            type: String,
+            default: "Search"
         },
         showActionsDelete: {
             type: Boolean,
