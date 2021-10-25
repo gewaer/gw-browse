@@ -399,10 +399,10 @@ export default {
         searchableFields() {
             return this.tableFields.filter(field => field.searchable).map(field => {
                 if (typeof field.name === "object") {
-                    return field.name.searchName;
+                    return field.searchField || field.name.searchName;
                 }
 
-                return field.name;
+                return field.searchField || field.name;
             });
         },
         mainDateField() {
@@ -521,7 +521,6 @@ export default {
                 (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
             });
         },
-
         getFixedFilters(searchOptions, params) {
             let fixedFilters = Object.entries(searchOptions.fixedFilters || {});
             const dateFilters = Object.entries(searchOptions.dates || {});
@@ -547,7 +546,6 @@ export default {
 
             return params;
         },
-
         processTableFields(endpointFields) {
             this.extraFields.forEach((fieldDefinition) => {
                 // find field to replace the render
