@@ -3,9 +3,9 @@
         <div class="input-group search-bar col-12 col-md-7 col-lg-7">
             <input
                 v-model="search.text"
+                :placeholder="searchPlaceholder"
                 type="text"
                 class="form-control"
-                placeholder="search ..."
                 @keydown.enter="getData()"
             >
             <div v-if="showSearchFilters" class="browse-list-filters d-flex align-items-center">
@@ -112,6 +112,10 @@ export default {
         searchOptions: {
             type: Object,
             required: true
+        },
+        searchPlaceholder: {
+            type: String,
+            default: "Search"
         },
         showBulkActions: {
             type: Boolean,
