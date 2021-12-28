@@ -178,7 +178,7 @@
 
 <script>
 import _clone from "lodash/clone";
-import { getParams, getFixedFilters } from "./search";
+import { generateSearchParams } from "./search";
 import CustomFiltersForm from "./components/custom-filters-form";
 import ResourceActions from "./components/resource-actions";
 import CheckboxField from "./components/checkbox-field";
@@ -486,24 +486,8 @@ export default {
             return this.$refs.Vuetable.getAllQueryParams();
         },
         getData(searchOptions) {
-            let params = "";
-            const fixedFilters = Object.keys(searchOptions.fixedFilters || {});
-            const dateFilters = Object.keys(searchOptions.dates || {});
-            let searchableFields = [];
-            searchOptions.text = searchOptions.text.trim();
-
-            if (searchOptions.text.length) {
-                if (!searchOptions.filters.length) {
-                    searchableFields = this.searchableFields.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field));
-                } else {
-                    searchableFields = searchOptions.filters.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field));
-                }
-                params += getParams(searchableFields, searchOptions);
-            }
-
-            params = getFixedFilters(searchOptions, params, { formatDate: this.formatDate, mainDateField: this.mainDateField });
-
-            this.vuetableQueryParams.q = `(${params})`;
+            const params = generateSearchParams(searchOptions, this.searchableFields, { formatDate: this.formatDate, mainDateField: this.mainDateField });            
+            this.vuetableQueryParams.q = params.q;
             this.refresh();
         },
         getSchema() {
