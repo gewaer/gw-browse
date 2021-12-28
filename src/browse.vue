@@ -345,6 +345,14 @@ export default {
             default() {
                 return []
             }
+        },
+        /**
+         * Uses app-search for the resources searches.
+         * Override the searchable fields.
+         */
+        appSearch: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
