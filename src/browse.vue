@@ -426,7 +426,7 @@ export default {
         resource() {
             this.$refs.Vuetable.resetData();
             this.resetSortOrder();
-            this.vuetableQueryParams.q = null;
+            this.resetQueryParams();
             this.getSchema(this.resource);
             this.resetQueryParams();
         }
@@ -494,8 +494,10 @@ export default {
             return this.$refs.Vuetable.getAllQueryParams();
         },
         getData(searchOptions) {
-            const params = generateSearchParams(searchOptions, this.searchableFields, { formatDate: this.formatDate, mainDateField: this.mainDateField });            
-            this.vuetableQueryParams.q = params.q;
+            const params = generateSearchParams(searchOptions, this.searchableFields, { formatDate: this.formatDate, mainDateField: this.mainDateField });              
+            for (const param in params) {
+                this.$set(this.vuetableQueryParams, param, params[param]);
+            }
             this.refresh();
         },
         getSchema() {
