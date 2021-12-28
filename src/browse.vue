@@ -178,6 +178,7 @@
 
 <script>
 import _clone from "lodash/clone";
+import { getParams } from "./search";
 import CustomFiltersForm from "./components/custom-filters-form";
 import ResourceActions from "./components/resource-actions";
 import CheckboxField from "./components/checkbox-field";
@@ -497,16 +498,13 @@ export default {
                 } else {
                     searchableFields = searchOptions.filters.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field));
                 }
-                params += this.getParams(searchableFields, searchOptions);
+                params += getParams(searchableFields, searchOptions);
             }
 
             params = this.getFixedFilters(searchOptions, params);
 
             this.vuetableQueryParams.q = `(${params})`;
             this.refresh();
-        },
-        getParams(fields, searchOptions, separator = "%") {
-            return fields.map(field => `${field}:${separator}${searchOptions.text}${separator}`).join(";");
         },
         getSchema() {
             axios({
