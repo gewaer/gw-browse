@@ -162,7 +162,7 @@ export default {
             this.getData();
         },
         getData() {
-            this.search.text.trim().length && (this.showClearSearch = true) || (this.showClearSearch = false);
+            (this.search.text || "").trim().length && (this.showClearSearch = true) || (this.showClearSearch = false);
             this.search.filters = this.searchFilters.reduce((accumulator, item) => accumulator.concat(item.name), []);
             this.search.fixedFilters = this.searchOptions.fixedFilters;
             this.$emit("getData", this.search);
