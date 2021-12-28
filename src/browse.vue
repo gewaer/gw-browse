@@ -178,7 +178,7 @@
 
 <script>
 import _clone from "lodash/clone";
-import { getParams } from "./search";
+import { getParams, getFixedFilters } from "./search";
 import CustomFiltersForm from "./components/custom-filters-form";
 import ResourceActions from "./components/resource-actions";
 import CheckboxField from "./components/checkbox-field";
@@ -501,7 +501,7 @@ export default {
                 params += getParams(searchableFields, searchOptions);
             }
 
-            params = this.getFixedFilters(searchOptions, params);
+            params = getFixedFilters(searchOptions, params, { formatDate: this.formatDate, mainDateField: this.mainDateField });
 
             this.vuetableQueryParams.q = `(${params})`;
             this.refresh();
@@ -518,31 +518,6 @@ export default {
                 this.showBulkActions && this.tableFields.unshift(this.vuetableSelection);
                 (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
             });
-        },
-        getFixedFilters(searchOptions, params) {
-            let fixedFilters = Object.entries(searchOptions.fixedFilters || {});
-            const dateFilters = Object.entries(searchOptions.dates || {});
-            let dateValues = "";
-
-            if (fixedFilters.length || dateFilters.length) {
-                fixedFilters = fixedFilters.map(([filterName, value]) => {
-                    if (Array.isArray(value)) {
-                        return `${filterName}${value.join("")}`;
-                    } else {
-                        return `${filterName}:${value}`;
-                    }
-                }).join(",");
-                if (dateFilters.length && this.mainDateField) {
-                    let dateFilterValue = this.formatDate(searchOptions.dates.start);
-                    if (searchOptions.dates.end) {
-                        dateFilterValue += `,${this.mainDateField}<${this.formatDate(searchOptions.dates.end)}`;
-                    }
-                    dateValues = `${this.mainDateField}>${dateFilterValue}`;
-                }
-                params = [params, dateValues, fixedFilters].filter(val => val).join(",");
-            }
-
-            return params;
         },
         processTableFields(endpointFields) {
             this.extraFields.forEach((fieldDefinition) => {
