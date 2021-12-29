@@ -1,3 +1,5 @@
+export const APP_SEARCH_URL = "search";
+
 export function getParams(fields, searchOptions, separator = "%") {
     return fields
         .map(field => `${field}:${separator}${searchOptions.text}${separator}`)
@@ -77,5 +79,16 @@ export function generateSearchParams(
 
     return {
         q: `(${params})`
+    };
+}
+
+export function generateAppSearchParams(
+    searchOptions,
+    searchableFields,
+    dateOptions
+) {
+    return {
+        text: searchOptions.text.trim(),
+        filters: `(${getFixedFilters(searchOptions, "", dateOptions)})`
     };
 }

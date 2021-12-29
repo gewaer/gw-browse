@@ -74,7 +74,7 @@
                 <div class="table-responsive">
                     <vuetable
                         ref="Vuetable"
-                        :api-url="`/${resource.endpoint || resource.slug}`"
+                        :api-url="resourceURL"
                         :append-params="vuetableQueryParams"
                         :css="vuetableStyles"
                         :data-path="dataPath"
@@ -178,7 +178,7 @@
 
 <script>
 import _clone from "lodash/clone";
-import { generateSearchParams } from "./search";
+import { generateSearchParams, generateAppSearchParams, APP_SEARCH_URL } from "./search";
 import CustomFiltersForm from "./components/custom-filters-form";
 import ResourceActions from "./components/resource-actions";
 import CheckboxField from "./components/checkbox-field";
@@ -417,6 +417,17 @@ export default {
         mainDateField() {
             const mainDateField = this.tableFields.filter(field => field.dateFilter).map(field => field.name);
             return mainDateField.length ? mainDateField[0] : "";
+        },
+        resourceURL() {
+            if (this.resource.endpoint) {
+                return `/${this.resource.endpoint}`;
+            }
+
+            if (this.appSearch) {
+                return `/${APP_SEARCH_URL}/${this.resource.slug}`;
+            }
+
+            return `/${this.resource.slug}`;
         }
     },
     watch: {
@@ -432,8 +443,12 @@ export default {
         }
     },
     created() {
+        
         this.setPerPage();
         this.getSchema(this.resource);
+        if (this.appSearch) {
+            this.$set(this.vuetableQueryParams, "text", "");
+        }
     },
     methods: {
         bulkDelete() {},
@@ -494,7 +509,9 @@ export default {
             return this.$refs.Vuetable.getAllQueryParams();
         },
         getData(searchOptions) {
-            const params = generateSearchParams(searchOptions, this.searchableFields, { formatDate: this.formatDate, mainDateField: this.mainDateField });              
+            const searchArgs = [searchOptions, this.searchableFields, { formatDate: this.formatDate, mainDateField: this.mainDateField }];
+            const params = this.appSearch ? generateAppSearchParams(...searchArgs) : generateSearchParams(...searchArgs);      
+            console.log(params);        
             for (const param in params) {
                 this.$set(this.vuetableQueryParams, param, params[param]);
             }
@@ -577,6 +594,7 @@ export default {
         },
         resetQueryParams() {
             this.vuetableQueryParams.q = null
+            this.$set(this.vuetableQueryParams, "text", "");
         },
         resetSortOrder() {
             this.sortOrder = [{
