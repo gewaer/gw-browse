@@ -511,7 +511,6 @@ export default {
         getData(searchOptions) {
             const searchArgs = [searchOptions, this.searchableFields, { formatDate: this.formatDate, mainDateField: this.mainDateField }];
             const params = this.appSearch ? generateAppSearchParams(...searchArgs) : generateSearchParams(...searchArgs);      
-            console.log(params);        
             for (const param in params) {
                 this.$set(this.vuetableQueryParams, param, params[param]);
             }
