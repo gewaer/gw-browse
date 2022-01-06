@@ -74,7 +74,7 @@
                 <div class="table-responsive">
                     <vuetable
                         ref="Vuetable"
-                        :api-url="`/${resource.endpoint || resource.slug}`"
+                        :api-url="resourceURL"
                         :append-params="vuetableQueryParams"
                         :css="vuetableStyles"
                         :data-path="dataPath"
@@ -178,6 +178,7 @@
 
 <script>
 import _clone from "lodash/clone";
+import { generateSearchParams, generateAppSearchParams, APP_SEARCH_URL } from "./search";
 import CustomFiltersForm from "./components/custom-filters-form";
 import ResourceActions from "./components/resource-actions";
 import CheckboxField from "./components/checkbox-field";
@@ -344,6 +345,14 @@ export default {
             default() {
                 return []
             }
+        },
+        /**
+         * Uses app-search for the resources searches.
+         * Override the searchable fields.
+         */
+        appSearch: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -408,6 +417,17 @@ export default {
         mainDateField() {
             const mainDateField = this.tableFields.filter(field => field.dateFilter).map(field => field.name);
             return mainDateField.length ? mainDateField[0] : "";
+        },
+        resourceURL() {
+            if (this.resource.endpoint) {
+                return `/${this.resource.endpoint}`;
+            }
+
+            if (this.appSearch) {
+                return `/${APP_SEARCH_URL}/${this.resource.slug}`;
+            }
+
+            return `/${this.resource.slug}`;
         }
     },
     watch: {
@@ -417,14 +437,18 @@ export default {
         resource() {
             this.$refs.Vuetable.resetData();
             this.resetSortOrder();
-            this.vuetableQueryParams.q = null;
+            this.resetQueryParams();
             this.getSchema(this.resource);
             this.resetQueryParams();
         }
     },
     created() {
+        
         this.setPerPage();
         this.getSchema(this.resource);
+        if (this.appSearch) {
+            this.$set(this.vuetableQueryParams, "text", "");
+        }
     },
     methods: {
         bulkDelete() {},
@@ -485,28 +509,12 @@ export default {
             return this.$refs.Vuetable.getAllQueryParams();
         },
         getData(searchOptions) {
-            let params = "";
-            const fixedFilters = Object.keys(searchOptions.fixedFilters || {});
-            const dateFilters = Object.keys(searchOptions.dates || {});
-            let searchableFields = [];
-            searchOptions.text = searchOptions.text.trim();
-
-            if (searchOptions.text.length) {
-                if (!searchOptions.filters.length) {
-                    searchableFields = this.searchableFields.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field));
-                } else {
-                    searchableFields = searchOptions.filters.filter(field => !fixedFilters.includes(field) && !dateFilters.includes(field));
-                }
-                params += this.getParams(searchableFields, searchOptions);
+            const searchArgs = [searchOptions, this.searchableFields, { formatDate: this.formatDate, mainDateField: this.mainDateField }];
+            const params = this.appSearch ? generateAppSearchParams(...searchArgs) : generateSearchParams(...searchArgs);      
+            for (const param in params) {
+                this.$set(this.vuetableQueryParams, param, params[param]);
             }
-
-            params = this.getFixedFilters(searchOptions, params);
-
-            this.vuetableQueryParams.q = `(${params})`;
             this.refresh();
-        },
-        getParams(fields, searchOptions, separator = "%") {
-            return fields.map(field => `${field}:${separator}${searchOptions.text}${separator}`).join(";");
         },
         getSchema() {
             axios({
@@ -520,31 +528,6 @@ export default {
                 this.showBulkActions && this.tableFields.unshift(this.vuetableSelection);
                 (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
             });
-        },
-        getFixedFilters(searchOptions, params) {
-            let fixedFilters = Object.entries(searchOptions.fixedFilters || {});
-            const dateFilters = Object.entries(searchOptions.dates || {});
-            let dateValues = "";
-
-            if (fixedFilters.length || dateFilters.length) {
-                fixedFilters = fixedFilters.map(([filterName, value]) => {
-                    if (Array.isArray(value)) {
-                        return `${filterName}${value.join("")}`;
-                    } else {
-                        return `${filterName}:${value}`;
-                    }
-                }).join(",");
-                if (dateFilters.length && this.mainDateField) {
-                    let dateFilterValue = this.formatDate(searchOptions.dates.start);
-                    if (searchOptions.dates.end) {
-                        dateFilterValue += `,${this.mainDateField}<${this.formatDate(searchOptions.dates.end)}`;
-                    }
-                    dateValues = `${this.mainDateField}>${dateFilterValue}`;
-                }
-                params = [params, dateValues, fixedFilters].filter(val => val).join(",");
-            }
-
-            return params;
         },
         processTableFields(endpointFields) {
             this.extraFields.forEach((fieldDefinition) => {
@@ -610,6 +593,7 @@ export default {
         },
         resetQueryParams() {
             this.vuetableQueryParams.q = null
+            this.$set(this.vuetableQueryParams, "text", "");
         },
         resetSortOrder() {
             this.sortOrder = [{

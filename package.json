@@ -1,6 +1,6 @@
 {
   "name": "@gewaer/gw-browse",
-  "version": "0.2.17",
+  "version": "0.3.0",
   "description": "Base browse component for the Gewaer platform.",
   "main": "./dist/gw-browse.umd.min.js",
   "files": [
@@ -12,7 +12,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "bundle": "vue-cli-service build --target lib --name gw-browse ./src/index.js",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "test:unit": "jest"
   },
   "keywords": [
     "gewaer"
@@ -41,6 +42,7 @@
     "babel-eslint": "^10.0.3",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.1",
+    "jest": "^27.4.5",
     "node-sass": "^4.13.1",
     "pre-commit": "^1.2.2",
     "sass-loader": "^8.0.2",
