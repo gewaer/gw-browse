@@ -419,15 +419,13 @@ export default {
             return mainDateField.length ? mainDateField[0] : "";
         },
         resourceURL() {
-            if (this.resource.endpoint) {
-                return `/${this.resource.endpoint}`;
-            }
-
+            const baseURL = `/${this.resource.endpoint || this.resource.slug}`;
+           
             if (this.appSearch) {
-                return `/${APP_SEARCH_URL}/${this.resource.slug}`;
+                return `/${APP_SEARCH_URL}${baseURL}`;
             }
 
-            return `/${this.resource.slug}`;
+            return baseURL;
         }
     },
     watch: {
