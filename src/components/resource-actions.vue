@@ -1,5 +1,6 @@
 <template>
     <div class="browse-actions row">
+        <slot name="before-search-bar" />
         <div class="input-group search-bar col-12 col-md-7 col-lg-7">
             <input
                 v-model="search.text"
@@ -42,6 +43,25 @@
                 </button>
             </div>
         </div>
+        <slot name="after-search-bar" />
+
+        <div v-if="searchQuickFilters.length" class="col-auto browse-actions__quick-filters">
+            <div class="btn-group" role="group" aria-label="quick filters">
+                <button 
+                    v-for="filter in searchQuickFilters" 
+                    :key="`quick-filter-${filter.name}`"
+                    :class="{
+                        'btn-secondary': filter.active,
+                        'btn-outline-secondary': !filter.active
+                    }"
+                    type="button" 
+                    class="btn btn-secondary" 
+                    @click="toogleQuickFilter(filter)"
+                >
+                    {{ filter.title }}
+                </button>
+            </div>
+        </div>
 
 
         <dropdown v-if="showBulkActions" :is-icon="false" class="bulk-actions col-auto ml-auto">
@@ -66,9 +86,11 @@
             </div>
         </dropdown>
 
-        <div class="col-auto">
+        <div
+            v-if="showCreateResource"
+            class="col-auto"
+        >
             <router-link
-                v-if="showCreateResource"
                 :to="createUrl"
                 class="add-record-btn btn btn-primary"
             >
@@ -128,13 +150,18 @@ export default {
         showSearchFilters: {
             type: Boolean,
             default: true
+        },
+        quickFilters: {
+            type: Array,
+            default: () => []
         }
     },
     data() {
         return {
             search: _clone(this.searchOptions),
             searchFilters: [],
-            showClearSearch: false
+            showClearSearch: false,
+            searchQuickFilters: _clone(this.quickFilters)
         }
     },
     computed: {
@@ -169,13 +196,21 @@ export default {
         },
         singularize(text) {
             return pluralize.singular(text);
+        },
+        toogleQuickFilter(filter) {
+            this.$set(filter, "active", !filter.active);
+            this.$set(this.search, "quickFilters", this.quickFilters);
+            this.$emit("getData", this.search);            
         }
     }
 }
 </script>
 
+
 <style lang="scss">
 .browse-actions {
+    --filters-input-height: 40px;
+
     display: flex;
     align-items: center;
     margin-bottom: 35px;
@@ -188,6 +223,10 @@ export default {
 
     .browse-list-filters {
         width: 30%;
+        @media(max-width: 991px) {
+            margin-bottom: 10px;
+        }
+
         .custom-filters-form-btn {
             background-color: var(--base-color);
             color: white;
@@ -195,9 +234,28 @@ export default {
             cursor: pointer;
         }
 
-        @media(max-width: 991px) {
-            margin-bottom: 10px;
+        .multiselect {            
+            .multiselect__select {
+                height: var(--filters-input-height);
+            }
+            .multiselect__tags {
+                min-height: var(--filters-input-height);
+            }
+            
+                    
+            .multiselect__placeholder {
+                min-height: 16px;
+                padding-top: 2px;
+            }
+
+            
+            .multiselect__input {
+                padding-left: 0;
+                padding-top: 4px;
+            }
         }
+        
     }
 }
 </style>
+

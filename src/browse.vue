@@ -32,10 +32,18 @@
                 :show-bulk-actions="showBulkActions"
                 :show-create-resource="showCreateResource"
                 :show-search-filters="showSearchFilters"
+                :quick-filters="quickFilters"
                 @getData="getData"
                 @run-action="runAction"
                 @show-custom-filters-form="$modal.show('custom-filters-form')"
-            />
+            >
+                <template #before-search-bar>
+                    <slot name="before-search-bar" />
+                </template>
+                <template #after-search-bar>
+                    <slot name="after-search-bar" />
+                </template>
+            </resource-actions>
         </slot>
 
         <div v-show="!loading">
@@ -178,7 +186,7 @@
 
 <script>
 import _clone from "lodash/clone";
-import { generateSearchParams, generateAppSearchParams, APP_SEARCH_URL } from "./search";
+import { generateSearchParams, generateAppSearchParams, getQuickFiltersParams, APP_SEARCH_URL } from "./search";
 import CustomFiltersForm from "./components/custom-filters-form";
 import ResourceActions from "./components/resource-actions";
 import CheckboxField from "./components/checkbox-field";
@@ -353,6 +361,24 @@ export default {
         appSearch: {
             type: Boolean,
             default: false
+        },
+        /**
+         * A quick filter
+         * @typedef {Object} QuickFilter
+         * @property {int} id - An id
+         * @property {string} name - A name 
+         * @property {string} - title - The title showed to the user
+         * @property {boolean} - active - If the filter is active or not by default
+         * @property {function} - getValue - Returns the value of the filter with the active value passed
+         * @property {string} - appendParam - set the filter as an extra param (filters inside q not supported yet)
+         */
+
+        /**
+         * @param {QuickFilter[]} - quickFilters - The list of quick filters to display
+         */
+        quickFilters: {
+            type: Array,
+            default: () => []
         }
     },
     data() {
@@ -380,7 +406,7 @@ export default {
                 dataClass: "table-actions"
             },
             tableFields: [],
-            vuetableQueryParams: _clone(this.appendParams),
+            vuetableQueryParams: _clone({ ...this.appendParams, ...getQuickFiltersParams(this.quickFilters) }),
             vuetableSelection: {
                 name: CheckboxField,
                 title: "checkbox",
@@ -430,7 +456,10 @@ export default {
     },
     watch: {
         appendParams() {
-            this.vuetableQueryParams = _clone(this.appendParams);
+            this.vuetableQueryParams = _clone({ ...this.appendParams, ...getQuickFiltersParams(this.quickFilters) });
+        },
+        quickFilters() {
+            this.vuetableQueryParams = _clone({ ...this.appendParams, ...getQuickFiltersParams(this.quickFilters) });
         },
         resource() {
             this.$refs.Vuetable.resetData();
@@ -508,7 +537,7 @@ export default {
         },
         getData(searchOptions) {
             const searchArgs = [searchOptions, this.searchableFields, { formatDate: this.formatDate, mainDateField: this.mainDateField }];
-            const params = this.appSearch ? generateAppSearchParams(...searchArgs) : generateSearchParams(...searchArgs);      
+            const params = this.appSearch ? generateAppSearchParams(...searchArgs) : generateSearchParams(...searchArgs);   
             for (const param in params) {
                 this.$set(this.vuetableQueryParams, param, params[param]);
             }
