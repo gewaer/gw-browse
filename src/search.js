@@ -6,6 +6,17 @@ export function getParams(fields, searchOptions, separator = "%") {
         .join(";");
 }
 
+export function getQuickFiltersParams(quickFilters) {
+    return quickFilters.reduce((acc, item) => {
+        if (item.appendParam) {
+            acc[item.appendParam] = item.getValue
+                ? item.getValue(item.active)
+                : Boolean(item.active);
+        }
+        return acc;
+    }, {});
+}
+
 export function getFixedFilters(
     searchOptions,
     params,
@@ -77,9 +88,17 @@ export function generateSearchParams(
         mainDateField: dateOptions.mainDateField
     });
 
-    return {
+    let result = {
         q: `(${params})`
     };
+
+    if ((searchOptions.quickFilters || []).length) {
+        result = {
+            ...result,
+            ...getQuickFiltersParams(searchOptions.quickFilters)
+        };
+    }
+    return result;
 }
 
 export function generateAppSearchParams(
