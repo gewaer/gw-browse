@@ -45,6 +45,25 @@
         </div>
         <slot name="after-search-bar" />
 
+        <div v-if="searchQuickFilters.length" class="col-auto browse-actions__quick-filters">
+            <div class="btn-group" role="group" aria-label="quick filters">
+                <button 
+                    v-for="filter in searchQuickFilters" 
+                    :key="`quick-filter-${filter.name}`"
+                    :class="{
+                        'btn-secondary': filter.active,
+                        'btn-outline-secondary': !filter.active
+                    }"
+                    type="button" 
+                    class="btn btn-secondary" 
+                    @click="toogleQuickFilter(filter)"
+                >
+                    {{ filter.title }}
+                </button>
+            </div>
+        </div>
+
+
         <dropdown v-if="showBulkActions" :is-icon="false" class="bulk-actions col-auto ml-auto">
             <button
                 id="bulk-actions"
@@ -131,13 +150,18 @@ export default {
         showSearchFilters: {
             type: Boolean,
             default: true
+        },
+        quickFilters: {
+            type: Array,
+            default: () => []
         }
     },
     data() {
         return {
             search: _clone(this.searchOptions),
             searchFilters: [],
-            showClearSearch: false
+            showClearSearch: false,
+            searchQuickFilters: _clone(this.quickFilters)
         }
     },
     computed: {
@@ -172,6 +196,11 @@ export default {
         },
         singularize(text) {
             return pluralize.singular(text);
+        },
+        toogleQuickFilter(filter) {
+            this.$set(filter, "active", !filter.active);
+            this.$set(this.search, "quickFilters", this.quickFilters);
+            this.$emit("getData", this.search);            
         }
     }
 }
