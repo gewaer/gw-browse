@@ -67,9 +67,11 @@
             </div>
         </dropdown>
 
-        <div class="col-auto">
+        <div
+            v-if="showCreateResource"
+            class="col-auto"
+        >
             <router-link
-                v-if="showCreateResource"
                 :to="createUrl"
                 class="add-record-btn btn btn-primary"
             >
