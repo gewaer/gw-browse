@@ -174,8 +174,11 @@ export default {
 }
 </script>
 
+
 <style lang="scss">
 .browse-actions {
+    --filters-input-height: 40px;
+
     display: flex;
     align-items: center;
     margin-bottom: 35px;
@@ -188,6 +191,10 @@ export default {
 
     .browse-list-filters {
         width: 30%;
+        @media(max-width: 991px) {
+            margin-bottom: 10px;
+        }
+
         .custom-filters-form-btn {
             background-color: var(--base-color);
             color: white;
@@ -195,9 +202,28 @@ export default {
             cursor: pointer;
         }
 
-        @media(max-width: 991px) {
-            margin-bottom: 10px;
+        .multiselect {            
+            .multiselect__select {
+                height: var(--filters-input-height);
+            }
+            .multiselect__tags {
+                min-height: var(--filters-input-height);
+            }
+            
+                    
+            .multiselect__placeholder {
+                min-height: 16px;
+                padding-top: 2px;
+            }
+
+            
+            .multiselect__input {
+                padding-left: 0;
+                padding-top: 4px;
+            }
         }
+        
     }
 }
 </style>
+
