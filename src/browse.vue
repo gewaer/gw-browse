@@ -35,7 +35,14 @@
                 @getData="getData"
                 @run-action="runAction"
                 @show-custom-filters-form="$modal.show('custom-filters-form')"
-            />
+            >
+                <template #before-search-bar>
+                    <slot name="before-search-bar" />
+                </template>
+                <template #after-search-bar>
+                    <slot name="after-search-bar" />
+                </template>
+            </resource-actions>
         </slot>
 
         <div v-show="!loading">

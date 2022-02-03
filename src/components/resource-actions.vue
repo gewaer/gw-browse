@@ -1,5 +1,6 @@
 <template>
     <div class="browse-actions row">
+        <slot name="before-search-bar" />
         <div class="input-group search-bar col-12 col-md-7 col-lg-7">
             <input
                 v-model="search.text"
@@ -42,7 +43,7 @@
                 </button>
             </div>
         </div>
-
+        <slot name="after-search-bar" />
 
         <dropdown v-if="showBulkActions" :is-icon="false" class="bulk-actions col-auto ml-auto">
             <button
