@@ -177,6 +177,9 @@ export default {
             handler() {
                 this.search = _clone(this.searchOptions)
             }
+        },
+        quickFilters(value) {
+            this.searchQuickFilters = _clone(value);
         }
     },
     methods: {
