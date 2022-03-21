@@ -43,6 +43,10 @@
                 <template #after-search-bar>
                     <slot name="after-search-bar" />
                 </template>
+
+                <template #after-create-resource>
+                    <slot name="after-create-resource" />
+                </template>
             </resource-actions>
         </slot>
 
