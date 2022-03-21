@@ -98,6 +98,9 @@
                 Add {{ singularize(currentResource.title) }}
             </router-link>
         </div>
+
+        
+        <slot name="after-create-resource" />
     </div>
 </template>
 
