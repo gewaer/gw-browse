@@ -19,43 +19,52 @@
             {{ resource.name }}
         </h4>
 
-        <slot :data="{ searchOptions }" name="resource-actions" v-bind="{ searchOptions, getData, filterableFields }">
-            <resource-actions
-                v-if="showResourceActions"
-                :bulk-actions="bulkActionsList"
-                :create-resource-url="createResourceUrl"
-                :current-resource="resource"
-                :custom-filter-fields="customFilterFields"
-                :filterable-fields="filterableFields"
-                :search-options="searchOptions"
-                :search-placeholder="searchPlaceholder"
-                :show-bulk-actions="showBulkActions"
-                :show-create-resource="showCreateResource"
-                :show-search-filters="showSearchFilters"
-                :quick-filters="quickFilters"
-                @getData="getData"
-                @run-action="runAction"
-                @show-custom-filters-form="$modal.show('custom-filters-form')"
-            >
-                <template #before-search-bar>
-                    <slot name="before-search-bar" />
-                </template>
-                <template #after-search-bar>
-                    <slot name="after-search-bar" />
-                </template>
-
-                <template #after-create-resource>
-                    <slot name="after-create-resource" />
-                </template>
-            </resource-actions>
-        </slot>
-
         <div v-show="!loading">
             <div class="table-container m-b-0">
-                <div v-if="showPagination && showPaginationTop" class="pagination-controls pc-top row">
+                <slot
+                    :data="{ searchOptions }"
+                    name="resource-actions"
+                    v-bind="{ searchOptions, getData, filterableFields }"
+                >
+                    <resource-actions
+                        v-if="showResourceActions"
+                        :bulk-actions="bulkActionsList"
+                        :create-resource-url="createResourceUrl"
+                        :current-resource="resource"
+                        :custom-filter-fields="customFilterFields"
+                        :filterable-fields="filterableFields"
+                        :search-options="searchOptions"
+                        :search-placeholder="searchPlaceholder"
+                        :show-bulk-actions="showBulkActions"
+                        :show-create-resource="showCreateResource"
+                        :show-search-filters="showSearchFilters"
+                        :quick-filters="quickFilters"
+                        @getData="getData"
+                        @run-action="runAction"
+                        @show-custom-filters-form="
+                            $modal.show('custom-filters-form')
+                        "
+                    >
+                        <template #before-search-bar>
+                            <slot name="before-search-bar" />
+                        </template>
+                        <template #after-search-bar>
+                            <slot name="after-search-bar" />
+                        </template>
+
+                        <template #after-create-resource>
+                            <slot name="after-create-resource" />
+                        </template>
+                    </resource-actions>
+                </slot>
+
+                <div
+                    v-if="showPagination && showPaginationTop"
+                    class="pagination-controls pc-top row"
+                >
                     <slot name="before-pagination" />
 
-                    <div class="d-flex">
+                    <!-- <div class="d-flex">
                         <template v-if="showResultsPerPage">
                             <div class="col-auto">
                                 <label class="mb-0">Results per page:</label>
@@ -81,7 +90,7 @@
                             class="col-auto"
                             @vuetable-pagination:change-page="onChangePage"
                         />
-                    </div>
+                    </div> -->
                 </div>
                 <div class="table-responsive">
                     <vuetable
@@ -101,7 +110,9 @@
                         :sort-order="sortOrder"
                         class="table table-condensed"
                         track-by="id"
-                        @vuetable:load-error="response => $emit('load-error', response)"
+                        @vuetable:load-error="
+                            response => $emit('load-error', response)
+                        "
                         @vuetable:loaded="loading = false"
                         @vuetable:loading="loading = true"
                         @vuetable:pagination-data="onPaginationData"
@@ -112,15 +123,14 @@
                             v-bind="{ ...props }"
                             name="actions"
                         >
-                            <div class="d-flex align-items-center justify-content-end">
+                            <div
+                                class="d-flex align-items-center justify-content-end"
+                            >
                                 <slot
                                     v-bind="{ ...props }"
                                     name="actions-before"
                                 />
-                                <slot
-                                    v-bind="{ ...props }"
-                                    name="actions-edit"
-                                >
+                                <slot v-bind="{ ...props }" name="actions-edit">
                                     <button
                                         v-if="showActionsEdit"
                                         type="button"
@@ -151,25 +161,30 @@
                         </slot>
                     </vuetable>
                 </div>
-                <div v-if="showPagination && showPaginationBottom" class="pagination-controls pc-bottom row">
+                <div
+                    v-if="showPagination && showPaginationBottom"
+                    class="pagination-controls pc-bottom row"
+                >
                     <template v-if="showResultsPerPage">
-                        <div class="col-auto">
-                            <label class="mb-0">Results per page:</label>
+                        <div style="display: flex; flex-direction: row; justify-content: center; align-content: flex-start;">
+                            <div class="mx-3">
+                                <label class="mt-1">Results per page:</label>
+                            </div>
+                            <div>
+                                <multiselect
+                                    v-model="selectedPerPage"
+                                    :allow-empty="false"
+                                    :show-labels="false"
+                                    :options="resultsPerPageOptions"
+                                    :searchable="false"
+                                    placeholder=""
+                                    @input="changePerPage"
+                                />
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <multiselect
-                                v-model="selectedPerPage"
-                                :allow-empty="false"
-                                :show-labels="false"
-                                :options="resultsPerPageOptions"
-                                :searchable="false"
-                                placeholder=""
-                                @input="changePerPage"
-                            />
-                        </div>
-                        <div v-show="totalPages > 1" class="col-auto separator">
+                        <!-- <div v-show="totalPages > 1" class="col-auto separator">
                             |
-                        </div>
+                        </div> -->
                     </template>
                     <vuetable-pagination
                         ref="paginationBottom"
@@ -182,7 +197,11 @@
         </div>
         <slot name="loading">
             <div v-show="loading" class="loading">
-                <img src="https://mc-canvas.s3.amazonaws.com/progress-circle.svg" width="48" height="48">
+                <img
+                    src="https://mc-canvas.s3.amazonaws.com/progress-circle.svg"
+                    width="48"
+                    height="48"
+                >
             </div>
         </slot>
     </div>
@@ -190,7 +209,12 @@
 
 <script>
 import _clone from "lodash/clone";
-import { generateSearchParams, generateAppSearchParams, getQuickFiltersParams, APP_SEARCH_URL } from "./search";
+import {
+    generateSearchParams,
+    generateAppSearchParams,
+    getQuickFiltersParams,
+    APP_SEARCH_URL
+} from "./search";
 import CustomFiltersForm from "./components/custom-filters-form";
 import ResourceActions from "./components/resource-actions";
 import CheckboxField from "./components/checkbox-field";
@@ -210,7 +234,7 @@ export default {
         appendParams: {
             type: Object,
             default() {
-                return {}
+                return {};
             }
         },
         bulkActions: {
@@ -238,7 +262,7 @@ export default {
         bulkMethods: {
             type: Object,
             default() {
-                return {}
+                return {};
             }
         },
         createResourceUrl: {
@@ -256,7 +280,7 @@ export default {
         httpOptions: {
             type: Object,
             default() {
-                return {}
+                return {};
             }
         },
         queryParams: {
@@ -266,7 +290,7 @@ export default {
                     sort: "sort",
                     page: "page",
                     perPage: "per_page"
-                }
+                };
             }
         },
         paginationData: {
@@ -301,7 +325,7 @@ export default {
                 return {
                     text: "",
                     filters: []
-                }
+                };
             }
         },
         searchPlaceholder: {
@@ -355,7 +379,7 @@ export default {
         extraFields: {
             type: Array,
             default() {
-                return []
+                return [];
             }
         },
         /**
@@ -370,7 +394,7 @@ export default {
          * A quick filter
          * @typedef {Object} QuickFilter
          * @property {int} id - An id
-         * @property {string} name - A name 
+         * @property {string} name - A name
          * @property {string} - title - The title showed to the user
          * @property {boolean} - active - If the filter is active or not by default
          * @property {function} - getValue - Returns the value of the filter with the active value passed
@@ -410,7 +434,10 @@ export default {
                 dataClass: "table-actions"
             },
             tableFields: [],
-            vuetableQueryParams: _clone({ ...this.appendParams, ...getQuickFiltersParams(this.quickFilters) }),
+            vuetableQueryParams: _clone({
+                ...this.appendParams,
+                ...getQuickFiltersParams(this.quickFilters)
+            }),
             vuetableSelection: {
                 name: CheckboxField,
                 title: "checkbox",
@@ -425,10 +452,12 @@ export default {
                 descendingIcon: "fa fa-sort-down",
                 sortableIcon: "fa fa-sort"
             },
-            sortOrder: [{
-                field: "created_at",
-                direction: "desc"
-            }]
+            sortOrder: [
+                {
+                    field: "created_at",
+                    direction: "desc"
+                }
+            ]
         };
     },
     computed: {
@@ -436,21 +465,25 @@ export default {
             return this.tableFields.filter(field => field.filterable);
         },
         searchableFields() {
-            return this.tableFields.filter(field => field.searchable).map(field => {
-                if (typeof field.name === "object") {
-                    return field.searchField || field.name.searchName;
-                }
+            return this.tableFields
+                .filter(field => field.searchable)
+                .map(field => {
+                    if (typeof field.name === "object") {
+                        return field.searchField || field.name.searchName;
+                    }
 
-                return field.searchField || field.name;
-            });
+                    return field.searchField || field.name;
+                });
         },
         mainDateField() {
-            const mainDateField = this.tableFields.filter(field => field.dateFilter).map(field => field.name);
+            const mainDateField = this.tableFields
+                .filter(field => field.dateFilter)
+                .map(field => field.name);
             return mainDateField.length ? mainDateField[0] : "";
         },
         resourceURL() {
             const baseURL = `/${this.resource.endpoint || this.resource.slug}`;
-           
+
             if (this.appSearch) {
                 return `/${APP_SEARCH_URL}${baseURL}`;
             }
@@ -460,10 +493,16 @@ export default {
     },
     watch: {
         appendParams() {
-            this.vuetableQueryParams = _clone({ ...this.appendParams, ...getQuickFiltersParams(this.quickFilters) });
+            this.vuetableQueryParams = _clone({
+                ...this.appendParams,
+                ...getQuickFiltersParams(this.quickFilters)
+            });
         },
         quickFilters() {
-            this.vuetableQueryParams = _clone({ ...this.appendParams, ...getQuickFiltersParams(this.quickFilters) });
+            this.vuetableQueryParams = _clone({
+                ...this.appendParams,
+                ...getQuickFiltersParams(this.quickFilters)
+            });
         },
         resource() {
             this.$refs.Vuetable.resetData();
@@ -474,7 +513,6 @@ export default {
         }
     },
     created() {
-        
         this.setPerPage();
         this.getSchema(this.resource);
         if (this.appSearch) {
@@ -491,39 +529,49 @@ export default {
             this.perPage = this.selectedPerPage;
         },
         confirmDelete(data) {
-            this.$modal.show(ResourceDeleteModal, {
-                buttons: [{
-                    title: "Cancel",
-                    handler: () => {
-                        this.$modal.hide("delete-resource");
-                    }
-                }, {
-                    title: "Confirm",
-                    class: "btn-danger",
-                    handler: () => {
-                        this.deleteResource(data);
-                    }
-                }]
-            }, {
-                adaptive: true,
-                clickToClose: false,
-                height: "auto",
-                name: "delete-resource",
-                width: 500
-            });
+            this.$modal.show(
+                ResourceDeleteModal,
+                {
+                    buttons: [
+                        {
+                            title: "Cancel",
+                            handler: () => {
+                                this.$modal.hide("delete-resource");
+                            }
+                        },
+                        {
+                            title: "Confirm",
+                            class: "btn-danger",
+                            handler: () => {
+                                this.deleteResource(data);
+                            }
+                        }
+                    ]
+                },
+                {
+                    adaptive: true,
+                    clickToClose: false,
+                    height: "auto",
+                    name: "delete-resource",
+                    width: 500
+                }
+            );
         },
         deleteResource(data) {
             axios({
                 url: `/${this.resource.slug}/${data.rowData.id}`,
                 method: "DELETE"
-            }).then((response) => {
-                this.$emit("delete-success", response, data);
-                this.refresh();
-            }).catch((error) => {
-                this.$emit("delete-error", error, data);
-            }).finally(() => {
-                this.$modal.hide("delete-resource");
-            });
+            })
+                .then(response => {
+                    this.$emit("delete-success", response, data);
+                    this.refresh();
+                })
+                .catch(error => {
+                    this.$emit("delete-error", error, data);
+                })
+                .finally(() => {
+                    this.$modal.hide("delete-resource");
+                });
         },
         editResource(resourceId) {
             this.$router.push({
@@ -540,8 +588,17 @@ export default {
             return this.$refs.Vuetable.getAllQueryParams();
         },
         getData(searchOptions) {
-            const searchArgs = [searchOptions, this.searchableFields, { formatDate: this.formatDate, mainDateField: this.mainDateField }];
-            const params = this.appSearch ? generateAppSearchParams(...searchArgs) : generateSearchParams(...searchArgs);   
+            const searchArgs = [
+                searchOptions,
+                this.searchableFields,
+                {
+                    formatDate: this.formatDate,
+                    mainDateField: this.mainDateField
+                }
+            ];
+            const params = this.appSearch
+                ? generateAppSearchParams(...searchArgs)
+                : generateSearchParams(...searchArgs);
             for (const param in params) {
                 this.$set(this.vuetableQueryParams, param, params[param]);
             }
@@ -550,23 +607,34 @@ export default {
         getSchema() {
             axios({
                 url: `/schema/${this.resource.slug}`
-            }).then((response) => {
-                this.tableFields = this.processTableFields(response.data.tableFields);
+            }).then(response => {
+                this.tableFields = this.processTableFields(
+                    response.data.tableFields
+                );
                 const bulkActions = response.data.bulkActions || [];
 
                 this.validateBulkActions(bulkActions);
                 this.setBulkActions(bulkActions);
-                this.showBulkActions && this.tableFields.unshift(this.vuetableSelection);
-                (this.showActionsDelete || this.showActionsEdit) && this.tableFields.push(this.vuetableActions);
+                this.showBulkActions &&
+                    this.tableFields.unshift(this.vuetableSelection);
+                (this.showActionsDelete || this.showActionsEdit) &&
+                    this.tableFields.push(this.vuetableActions);
             });
         },
         processTableFields(endpointFields) {
-            this.extraFields.forEach((fieldDefinition) => {
+            this.extraFields.forEach(fieldDefinition => {
                 // find field to replace the render
-                const fieldIndex = endpointFields.findIndex(field => [fieldDefinition.name, fieldDefinition.field].includes(field.name));
+                const fieldIndex = endpointFields.findIndex(field => [fieldDefinition.name, fieldDefinition.field].includes(
+                    field.name
+                )
+                );
                 if (fieldIndex != -1) {
                     const fieldName = endpointFields[fieldIndex].name;
-                    endpointFields[fieldIndex] = { ...endpointFields[fieldIndex], ...fieldDefinition, fieldName };
+                    endpointFields[fieldIndex] = {
+                        ...endpointFields[fieldIndex],
+                        ...fieldDefinition,
+                        fieldName
+                    };
                 } else {
                     endpointFields.push(fieldDefinition);
                 }
@@ -590,8 +658,12 @@ export default {
 
             this.totalPages = data.last_page;
             this.$refs.Vuetable.tablePagination = data;
-            this.showPagination && this.showPaginationBottom && this.$refs.paginationBottom.setPaginationData(data);
-            this.showPagination && this.showPaginationTop && this.$refs.paginationTop.setPaginationData(data);
+            this.showPagination &&
+                this.showPaginationBottom &&
+                this.$refs.paginationBottom.setPaginationData(data);
+            this.showPagination &&
+                this.showPaginationTop &&
+                this.$refs.paginationTop.setPaginationData(data);
         },
         refresh() {
             this.$refs.Vuetable.refresh();
@@ -607,45 +679,86 @@ export default {
             this.bulkActionsList = [...bulkActions, ...this.bulkActions];
 
             this.bulkActions.forEach(action => {
-                this.bulkActionsMethods[action.action] = this.bulkMethods[action.action] || this[action.action];
+                this.bulkActionsMethods[action.action] =
+                    this.bulkMethods[action.action] || this[action.action];
             });
         },
         setPerPage() {
-            const optionIncluded = this.resultsPerPageOptions.includes(this.resultsPerPage);
-            this.selectedPerPage = optionIncluded ? this.resultsPerPage : this.resultsPerPageOptions[0];
+            const optionIncluded = this.resultsPerPageOptions.includes(
+                this.resultsPerPage
+            );
+            this.selectedPerPage = optionIncluded
+                ? this.resultsPerPage
+                : this.resultsPerPageOptions[0];
             this.perPage = this.selectedPerPage;
         },
         validateBulkActions(actions) {
-            const areValid = actions.every(action => action.name && action.action);
+            const areValid = actions.every(
+                action => action.name && action.action
+            );
 
             if (!areValid) {
                 throw new Error("Invalid bulk action definition.");
             }
         },
         resetQueryParams() {
-            this.vuetableQueryParams.q = null
+            this.vuetableQueryParams.q = null;
             this.$set(this.vuetableQueryParams, "text", "");
         },
         resetSortOrder() {
-            this.sortOrder = [{
-                field: "created_at",
-                sortField: "created_at",
-                direction: "desc"
-            }];
+            this.sortOrder = [
+                {
+                    field: "created_at",
+                    sortField: "created_at",
+                    direction: "desc"
+                }
+            ];
         }
     }
-}
+};
 </script>
 
 <style lang="scss">
+.browse-list .pagination.menu .item {
+    background-color: var(--base-color);
+    color: white;
+    padding: 5px;
+    margin-left: 5px !important;
+    border-radius: 0% !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    line-height: 0;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+tr {
+    th {
+        background-color: var(--base-color);
+        color: white !important;
+        margin: 0px !important;
+    }
+}
+
 .browse-list {
     table {
         table-layout: initial !important;
         border-collapse: initial;
 
-        thead, tbody {
+        thead,
+        tbody {
             tr {
-                th, td {
+                th,
+                td {
                     white-space: normal !important;
                     overflow: visible !important;
                     text-overflow: initial !important;
@@ -658,7 +771,7 @@ export default {
             tr {
                 th {
                     font-weight: bold;
-                    color: #A5A5A5;
+                    color: #a5a5a5;
                     height: 50px;
                     font-family: inherit;
                     font-size: 14px;
@@ -687,22 +800,22 @@ export default {
         tbody {
             tr {
                 td {
-                    border-top: 1px solid #E1E8ED;
-                    color: #4B4B4B;
+                    border-top: 1px solid #e1e8ed;
+                    color: #4b4b4b;
                     font-weight: 600;
 
                     &:first-child {
-                        border-left: 1px solid #E1E8ED;
+                        border-left: 1px solid #e1e8ed;
                     }
 
                     &:last-child {
-                        border-right: 1px solid #E1E8ED;
+                        border-right: 1px solid #e1e8ed;
                     }
                 }
 
                 &:last-child {
                     td {
-                        border-bottom: 1px solid #E1E8ED;
+                        border-bottom: 1px solid #e1e8ed;
                     }
                 }
             }
@@ -718,14 +831,14 @@ export default {
         ::after {
             font-family: "Font Awesome 5 Free";
             font-style: normal;
-            content: "\f0d8"
+            content: "\f0d8";
         }
     }
     .sorted-asc {
         ::after {
             font-family: "Font Awesome 5 Free";
             font-style: normal;
-            content: "\f0d7"
+            content: "\f0d7";
         }
     }
 
@@ -770,7 +883,8 @@ export default {
     .pagination-controls {
         align-items: center;
         display: flex;
-        justify-content: flex-end;
+        justify-content: flex-start;
+        justify-content: space-between;
 
         &.pc-top {
             padding-bottom: 3px;

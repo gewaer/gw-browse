@@ -2,14 +2,28 @@
     <div class="browse-actions row">
         <slot name="before-search-bar" />
         <div class="input-group search-bar col-12 col-md-7 col-lg-7">
-            <input
-                v-model="search.text"
-                :placeholder="searchPlaceholder"
-                type="text"
-                class="form-control"
-                @keydown.enter="getData()"
+            <div class="form-control" style="display: flex;">
+                <input
+                    v-model="search.text"
+                    style="all: unset; width: 100%;"
+                    :placeholder="searchPlaceholder"
+                    type="text"
+                    @keydown.enter="getData()"
+                >
+
+                <div class="input-group-append">
+                    <button
+                        style="background-color: transparent; border: none; color: #4B4B4B;"
+                        @click="getData()"
+                    >
+                        <i class="fa fa-search" />
+                    </button>
+                </div>
+            </div>
+            <div
+                v-if="showSearchFilters"
+                class="browse-list-filters d-flex align-items-center"
             >
-            <div v-if="showSearchFilters" class="browse-list-filters d-flex align-items-center">
                 <multiselect
                     v-model="searchFilters"
                     :limit="1"
@@ -23,7 +37,10 @@
                 >
                     <template v-if="customFilterFields.length" slot="afterList">
                         <div class="custom-filters-form-btn option__desc">
-                            <a class="option__title" @click="$emit('show-custom-filters-form')">
+                            <a
+                                class="option__title"
+                                @click="$emit('show-custom-filters-form')"
+                            >
                                 <i class="fa fa-plus" />
                                 Add custom Filter
                             </a>
@@ -36,26 +53,23 @@
                     <i class="fa fa-times" />
                 </button>
             </div>
-            <div class="input-group-append">
-                <button class="btn btn-primary" @click="getData()">
-                    <i class="fa fa-search" />
-                    Search
-                </button>
-            </div>
         </div>
         <slot name="after-search-bar" />
 
-        <div v-if="searchQuickFilters.length" class="col-auto browse-actions__quick-filters">
+        <div
+            v-if="searchQuickFilters.length"
+            class="col-auto browse-actions__quick-filters"
+        >
             <div class="btn-group" role="group" aria-label="quick filters">
-                <button 
-                    v-for="filter in searchQuickFilters" 
+                <button
+                    v-for="filter in searchQuickFilters"
                     :key="`quick-filter-${filter.name}`"
                     :class="{
                         'btn-secondary': filter.active,
                         'btn-outline-secondary': !filter.active
                     }"
-                    type="button" 
-                    class="btn btn-secondary" 
+                    type="button"
+                    class="btn btn-secondary"
                     @click="toogleQuickFilter(filter)"
                 >
                     {{ filter.title }}
@@ -63,8 +77,11 @@
             </div>
         </div>
 
-
-        <dropdown v-if="showBulkActions" :is-icon="false" class="bulk-actions col-auto ml-auto">
+        <dropdown
+            v-if="showBulkActions"
+            :is-icon="false"
+            class="bulk-actions col-auto ml-auto"
+        >
             <button
                 id="bulk-actions"
                 slot="btn"
@@ -86,20 +103,16 @@
             </div>
         </dropdown>
 
-        <div
-            v-if="showCreateResource"
-            class="col-auto"
-        >
+        <div v-if="showCreateResource" class="col-auto">
             <router-link
                 :to="createUrl"
-                class="add-record-btn btn btn-primary"
+                class="add-record-btn btn btn-primary p-2"
             >
                 <i class="d-none d-sm-inline fa fa-plus-circle" />
                 Add {{ singularize(currentResource.title) }}
             </router-link>
         </div>
 
-        
         <slot name="after-create-resource" />
     </div>
 </template>
@@ -165,20 +178,25 @@ export default {
             searchFilters: [],
             showClearSearch: false,
             searchQuickFilters: _clone(this.quickFilters)
-        }
+        };
     },
     computed: {
         createUrl() {
             if (this.createResourceUrl) {
                 return this.createResourceUrl;
             }
-            return this.currentResource ? { name: "create-resource", params: { resource: this.currentResource.slug } } : { }
+            return this.currentResource
+                ? {
+                    name: "create-resource",
+                    params: { resource: this.currentResource.slug }
+                }
+                : {};
         }
     },
     watch: {
         currentResource: {
             handler() {
-                this.search = _clone(this.searchOptions)
+                this.search = _clone(this.searchOptions);
             }
         },
         quickFilters(value) {
@@ -190,13 +208,18 @@ export default {
             this.search = {
                 text: "",
                 filters: []
-            }
+            };
 
             this.getData();
         },
         getData() {
-            (this.search.text || "").trim().length && (this.showClearSearch = true) || (this.showClearSearch = false);
-            this.search.filters = this.searchFilters.reduce((accumulator, item) => accumulator.concat(item.name), []);
+            ((this.search.text || "").trim().length &&
+                (this.showClearSearch = true)) ||
+                (this.showClearSearch = false);
+            this.search.filters = this.searchFilters.reduce(
+                (accumulator, item) => accumulator.concat(item.name),
+                []
+            );
             this.search.fixedFilters = this.searchOptions.fixedFilters;
             this.$emit("getData", this.search);
         },
@@ -206,30 +229,33 @@ export default {
         toogleQuickFilter(filter) {
             this.$set(filter, "active", !filter.active);
             this.$set(this.search, "quickFilters", this.quickFilters);
-            this.$emit("getData", this.search);            
+            this.$emit("getData", this.search);
         }
     }
-}
+};
 </script>
-
 
 <style lang="scss">
 .browse-actions {
     --filters-input-height: 40px;
 
+    // display: flex;
+    // align-items: center;
+    // margin-bottom: 35px;
     display: flex;
-    align-items: center;
-    margin-bottom: 35px;
+    flex-direction: row;
+    margin-bottom: 30px;
+    justify-content: space-between;
 
     .search-bar {
-        @media(max-width: 991px) {
+        @media (max-width: 991px) {
             margin-bottom: 10px;
         }
     }
 
     .browse-list-filters {
         width: 30%;
-        @media(max-width: 991px) {
+        @media (max-width: 991px) {
             margin-bottom: 10px;
         }
 
@@ -240,28 +266,24 @@ export default {
             cursor: pointer;
         }
 
-        .multiselect {            
+        .multiselect {
             .multiselect__select {
                 height: var(--filters-input-height);
             }
             .multiselect__tags {
                 min-height: var(--filters-input-height);
             }
-            
-                    
+
             .multiselect__placeholder {
                 min-height: 16px;
                 padding-top: 2px;
             }
 
-            
             .multiselect__input {
                 padding-left: 0;
                 padding-top: 4px;
             }
         }
-        
     }
 }
 </style>
-
