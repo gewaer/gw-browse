@@ -4,12 +4,12 @@
         <div class="input-group search-bar col-12 col-md-7 col-lg-7">
             <div class="form-control" style="display: flex;">
                 <input
+                    v-model="search.text"
                     style="all: unset; width: 100%;"
                     :placeholder="searchPlaceholder"
-                    @keydown.enter="getData()"
-                    v-model="search.text"
                     type="text"
-                />
+                    @keydown.enter="getData()"
+                >
 
                 <div class="input-group-append">
                     <button
@@ -187,9 +187,9 @@ export default {
             }
             return this.currentResource
                 ? {
-                      name: "create-resource",
-                      params: { resource: this.currentResource.slug }
-                  }
+                    name: "create-resource",
+                    params: { resource: this.currentResource.slug }
+                }
                 : {};
         }
     },

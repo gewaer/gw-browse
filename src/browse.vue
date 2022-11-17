@@ -201,7 +201,7 @@
                     src="https://mc-canvas.s3.amazonaws.com/progress-circle.svg"
                     width="48"
                     height="48"
-                />
+                >
             </div>
         </slot>
     </div>
@@ -624,10 +624,9 @@ export default {
         processTableFields(endpointFields) {
             this.extraFields.forEach(fieldDefinition => {
                 // find field to replace the render
-                const fieldIndex = endpointFields.findIndex(field =>
-                    [fieldDefinition.name, fieldDefinition.field].includes(
-                        field.name
-                    )
+                const fieldIndex = endpointFields.findIndex(field => [fieldDefinition.name, fieldDefinition.field].includes(
+                    field.name
+                )
                 );
                 if (fieldIndex != -1) {
                     const fieldName = endpointFields[fieldIndex].name;
