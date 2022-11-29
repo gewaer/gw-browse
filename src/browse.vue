@@ -749,10 +749,19 @@ tr {
     }
 }
 
+small {
+    display: none !important;
+}
+
+tr:hover {
+    background-color: #f5f4f4 !important;
+    cursor: pointer !important;
+}
+
 .browse-list {
     table {
         table-layout: initial !important;
-        border-collapse: initial;
+        // border-collapse: initial;
 
         thead,
         tbody {
