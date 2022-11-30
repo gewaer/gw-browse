@@ -116,6 +116,7 @@
                         @vuetable:loaded="loading = false"
                         @vuetable:loading="loading = true"
                         @vuetable:pagination-data="onPaginationData"
+                        @vuetable:row-clicked="open"
                     >
                         <slot
                             slot="actions"
@@ -166,7 +167,9 @@
                     class="pagination-controls pc-bottom row"
                 >
                     <template v-if="showResultsPerPage">
-                        <div style="display: flex; flex-direction: row; justify-content: center; align-content: flex-start;">
+                        <div
+                            style="display: flex; flex-direction: row; justify-content: center; align-content: flex-start;"
+                        >
                             <div class="mx-3">
                                 <label class="mt-1">Results per page:</label>
                             </div>
@@ -520,6 +523,20 @@ export default {
         }
     },
     methods: {
+        open(event) {
+            const target = event.event.target;
+            const id = event.data.id;
+
+            const isAction =
+                target.classList.contains("fa-solid") ||
+                target.classList.contains("fa-ellipsis-vertical") ||
+                target.classList.contains("table-actions") ||
+                target.classList.contains("justify-content-end");
+
+            if (!isAction) {
+                this.$router.push({ path: `/browse/leads/edit/${id}` });
+            }
+        },
         bulkDelete() {},
         closeAddCustomFilter() {
             this.$modal.hide("custom-filters-form");
