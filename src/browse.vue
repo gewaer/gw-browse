@@ -778,8 +778,6 @@ tr:hover {
 .browse-list {
     table {
         table-layout: initial !important;
-        // border-collapse: initial;
-
         thead,
         tbody {
             tr {
