@@ -36,16 +36,16 @@
         "vuetable-2": "^2.0.0-beta.4"
     },
     "devDependencies": {
-        "@vue/cli-plugin-babel": "^4.2.2",
-        "@vue/cli-plugin-eslint": "^4.2.2",
-        "@vue/cli-service": "^4.2.2",
+        "@vue/cli-plugin-babel": "^5.0.8",
+        "@vue/cli-plugin-eslint": "^5.0.8",
+        "@vue/cli-service": "^5.0.8",
         "babel-eslint": "^10.0.3",
         "eslint": "^6.8.0",
         "eslint-plugin-vue": "^6.2.1",
         "jest": "^27.4.5",
         "node-sass": "^4.13.1",
         "pre-commit": "^1.2.2",
-        "sass-loader": "^8.0.2",
+        "sass-loader": "^13.2.0",
         "vue-template-compiler": "^2.6.11"
     }
 }
