@@ -44,7 +44,7 @@
                         @show-custom-filters-form="
                             $modal.show('custom-filters-form')
                         "
-                        @add="(event) => $emit('add', event)"
+                        @add="event => $emit('add', event)"
                     >
                         <template #before-search-bar>
                             <slot name="before-search-bar" />
@@ -605,11 +605,9 @@ export default {
                 );
 
                 if (this.$route.params.resource === "leads") {
-                    this.tableFields = this.tableFields.map(
-                        ({ ...rest }) => {
-                            return rest;
-                        }
-                    );
+                    this.tableFields = this.tableFields.map(({ ...rest }) => {
+                        return { ...rest, visible: true };
+                    });
                 }
 
                 const bulkActions = response.data.bulkActions || [];
