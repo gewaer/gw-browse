@@ -104,13 +104,13 @@
         </dropdown>
 
         <div v-if="showCreateResource" class="col-auto">
-            <router-link
-                :to="createUrl"
+            <button
                 class="add-record-btn btn btn-primary p-2"
+                @click="$emit('add', currentResource.title)"
             >
                 <i class="d-none d-sm-inline fa fa-plus-circle" />
                 Add {{ singularize(currentResource.title) }}
-            </router-link>
+            </button>
         </div>
 
         <slot name="after-create-resource" />

@@ -44,6 +44,7 @@
                         @show-custom-filters-form="
                             $modal.show('custom-filters-form')
                         "
+                        @add="event => $emit('add', event)"
                     >
                         <template #before-search-bar>
                             <slot name="before-search-bar" />
@@ -63,34 +64,6 @@
                     class="pagination-controls pc-top row"
                 >
                     <slot name="before-pagination" />
-
-                    <!-- <div class="d-flex">
-                        <template v-if="showResultsPerPage">
-                            <div class="col-auto">
-                                <label class="mb-0">Results per page:</label>
-                            </div>
-                            <div class="col-auto">
-                                <multiselect
-                                    v-model="selectedPerPage"
-                                    :allow-empty="false"
-                                    :show-labels="false"
-                                    :options="resultsPerPageOptions"
-                                    :searchable="false"
-                                    placeholder=""
-                                    @input="changePerPage"
-                                />
-                            </div>
-                            <div v-show="totalPages > 1" class="col-auto separator">
-                                |
-                            </div>
-                        </template>
-                        <vuetable-pagination
-                            ref="paginationTop"
-                            :css="pagination"
-                            class="col-auto"
-                            @vuetable-pagination:change-page="onChangePage"
-                        />
-                    </div> -->
                 </div>
                 <div class="table-responsive">
                     <vuetable
@@ -534,7 +507,9 @@ export default {
                 target.classList.contains("justify-content-end");
 
             if (!isAction) {
-                this.$router.push({ path: `/browse/leads/edit/${id}` });
+                this.$router.push({
+                    path: `/browse/${this.$route.params.resource}/edit/${id}`
+                });
             }
         },
         bulkDelete() {},
@@ -628,6 +603,33 @@ export default {
                 this.tableFields = this.processTableFields(
                     response.data.tableFields
                 );
+
+                if (this.$route.params.resource === "leads") {
+                    this.tableFields = this.tableFields.map(({ ...rest }) => {
+                        if (rest.field === "leads_visits_count") {
+                            return { ...rest, visible: false };
+                        }
+
+                        if (rest.name === "people.name") {
+                            return {
+                                ...rest,
+                                visible: true,
+                                title: "Contact Person"
+                            };
+                        }
+
+                        if (rest.name === "owner.fullname") {
+                            return {
+                                ...rest,
+                                visible: true,
+                                name: "owner.full_name"
+                            }
+                        }
+
+                        return { ...rest, visible: true };
+                    });
+                }
+
                 const bulkActions = response.data.bulkActions || [];
 
                 this.validateBulkActions(bulkActions);
@@ -677,10 +679,10 @@ export default {
             this.$refs.Vuetable.tablePagination = data;
             this.showPagination &&
                 this.showPaginationBottom &&
-                this.$refs.paginationBottom.setPaginationData(data);
+                this.$refs.paginationBottom?.setPaginationData(data);
             this.showPagination &&
                 this.showPaginationTop &&
-                this.$refs.paginationTop.setPaginationData(data);
+                this.$refs.paginationTop?.setPaginationData(data);
         },
         refresh() {
             this.$refs.Vuetable.refresh();
