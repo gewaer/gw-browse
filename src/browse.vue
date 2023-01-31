@@ -606,6 +606,26 @@ export default {
 
                 if (this.$route.params.resource === "leads") {
                     this.tableFields = this.tableFields.map(({ ...rest }) => {
+                        if (rest.field === "leads_visits_count") {
+                            return { ...rest, visible: false };
+                        }
+
+                        if (rest.name === "people.name") {
+                            return {
+                                ...rest,
+                                visible: true,
+                                title: "Contact Person"
+                            };
+                        }
+
+                        if (rest.name === "owner.fullname") {
+                            return {
+                                ...rest,
+                                visible: true,
+                                name: "owner.full_name"
+                            }
+                        }
+
                         return { ...rest, visible: true };
                     });
                 }
@@ -659,10 +679,10 @@ export default {
             this.$refs.Vuetable.tablePagination = data;
             this.showPagination &&
                 this.showPaginationBottom &&
-                this.$refs.paginationBottom.setPaginationData(data);
+                this.$refs.paginationBottom?.setPaginationData(data);
             this.showPagination &&
                 this.showPaginationTop &&
-                this.$refs.paginationTop.setPaginationData(data);
+                this.$refs.paginationTop?.setPaginationData(data);
         },
         refresh() {
             this.$refs.Vuetable.refresh();
