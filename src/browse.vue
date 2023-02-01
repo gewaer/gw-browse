@@ -610,11 +610,20 @@ export default {
                             return { ...rest, visible: false };
                         }
 
+                        if (rest.name === "created_at") {
+                            return { ...rest, visible: false };
+                        }
+
+                        if (rest.name.searchName) {
+                            return { visible: false };
+                        }
+
                         if (rest.name === "people.name") {
                             return {
                                 ...rest,
                                 visible: true,
-                                title: "Contact Person"
+                                title: "Contact Person",
+                                width: "400px"
                             };
                         }
 
@@ -628,6 +637,11 @@ export default {
 
                         return { ...rest, visible: true };
                     });
+
+                    const contact = this.tableFields.filter((rest) => rest.name === "people.name");
+                    const all = this.tableFields.filter((rest) => rest.name !== "people.name")
+
+                    this.tableFields = [...contact, ...all];
                 }
 
                 const bulkActions = response.data.bulkActions || [];
@@ -679,10 +693,10 @@ export default {
             this.$refs.Vuetable.tablePagination = data;
             this.showPagination &&
                 this.showPaginationBottom &&
-                this.$refs.paginationBottom?.setPaginationData(data);
+                this.$refs.paginationBottom.setPaginationData(data);
             this.showPagination &&
                 this.showPaginationTop &&
-                this.$refs.paginationTop?.setPaginationData(data);
+                this.$refs.paginationTop.setPaginationData(data);
         },
         refresh() {
             this.$refs.Vuetable.refresh();
@@ -828,7 +842,7 @@ tr:hover {
                 td {
                     border-top: 1px solid #e1e8ed;
                     color: #4b4b4b;
-                    font-weight: 600;
+                    // font-weight: 600;
 
                     &:first-child {
                         border-left: 1px solid #e1e8ed;
